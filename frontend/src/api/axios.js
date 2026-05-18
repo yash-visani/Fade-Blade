@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Create an instance of axios with our backend URL
 const api = axios.create({
-  baseURL: 'http://localhost:5000/api', // Matches your backend port
+  baseURL: 'https://fade-blade-backend.onrender.com/api', // Matches your backend port
 });
 
 // Intercept requests to attach the auth token if it exists in local storage

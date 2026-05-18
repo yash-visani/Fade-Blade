@@ -1,0 +1,986 @@
+/* Base Styles */
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background-color: #f8f9fa;
+  color: #333;
+}
+
+/* --- Global Reset & Anti-Horizontal Scroll --- */
+html, body {
+  max-width: 100%;
+  overflow-x: hidden; /* This strictly forbids left/right scrolling */
+  position: relative;
+}
+
+#root {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box; /* Forces padding to stay inside the box widths */
+}
+
+/* =========================================
+   DESKTOP NAVBAR (LAPTOPS & MONITORS)
+========================================= */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 40px;
+  background-color: white;
+  border-bottom: 1px solid #e5e7eb;
+  position: sticky; /* Keeps navbar at top when scrolling */
+  top: 0;
+  z-index: 100;
+}
+
+.nav-logo {
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: #111827;
+  text-decoration: none;
+  letter-spacing: 1px;
+}
+
+.nav-logo span {
+  color: #f59e0b;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 25px; /* Spacing between links on laptop */
+}
+
+.nav-item {
+  text-decoration: none;
+  color: #374151;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: color 0.2s;
+}
+
+.nav-item:hover {
+  color: #f59e0b;
+}
+
+.btn-logout {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.btn-book-nav {
+  padding: 8px 20px;
+  border-radius: 6px;
+  text-decoration: none;
+}
+
+.hamburger {
+  display: none; /* Strictly hidden on laptops! */
+  background: none;
+  border: none;
+  font-size: 1.8rem;
+  cursor: pointer;
+  color: #111827;
+}
+
+/* --- Home Page (Hero Section) Styles --- */
+.hero-container {
+  min-height: calc(100vh - 70px); /* Fills the whole screen minus the navbar */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 0 20px;
+  background: linear-gradient(to bottom, #111827, #1f2937); /* Sleek dark gradient */
+  color: white;
+}
+
+.hero-title {
+  font-size: 3.5rem;
+  font-weight: 800;
+  margin-bottom: 1rem;
+  letter-spacing: -1px;
+}
+
+.hero-title span {
+  color: #f59e0b; /* The Gold/Amber accent */
+}
+
+.hero-subtitle {
+  font-size: 1.25rem;
+  color: #9ca3af; /* Soft gray for readability */
+  max-width: 600px;
+  margin-bottom: 2.5rem;
+  line-height: 1.6;
+}
+
+.hero-buttons {
+  display: flex;
+  gap: 20px;
+}
+
+.btn-primary {
+  background-color: #f59e0b;
+  color: #111827;
+  padding: 15px 30px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  text-decoration: none;
+  border-radius: 8px;
+  transition: all 0.2s;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+.btn-primary:hover {
+  background-color: #d97706;
+  transform: translateY(-2px); /* Tiny floating effect */
+}
+
+.btn-secondary {
+  background-color: transparent;
+  color: white;
+  padding: 15px 30px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  text-decoration: none;
+  border-radius: 8px;
+  border: 2px solid #374151;
+  transition: all 0.2s;
+}
+
+.btn-secondary:hover {
+  background-color: #374151;
+}
+
+/* --- Homepage Layout Sections --- */
+.section-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 80px 20px;
+}
+
+.section-title {
+  text-align: center;
+  font-size: 2.5rem;
+  margin-bottom: 50px;
+  font-weight: 800;
+  color: #111827;
+}
+
+.section-title span {
+  color: #f59e0b;
+}
+
+/* --- Stats Bar (From Image 5) --- */
+.stats-wrapper {
+  background-color: #f8f9fa;
+  padding: 0 20px;
+}
+
+.stats-row {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  gap: 30px;
+  background-color: #111827;
+  color: white;
+  padding: 40px 20px;
+  border-radius: 12px;
+  transform: translateY(-50px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.stat-item {
+  text-align: center;
+}
+
+.stat-number {
+  font-size: 2.5rem;
+  font-weight: 900;
+  color: #f59e0b;
+  margin: 0;
+}
+
+.stat-label {
+  font-size: 0.9rem;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 5px;
+}
+
+/* --- Premium Services Section --- */
+.premium-services-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
+}
+
+.premium-service-card {
+  position: relative;
+  height: 400px;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  text-decoration: none;
+  background-color: #111827;
+}
+
+.service-bg-img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s ease;
+  opacity: 0.5;
+}
+
+/* The hover effect makes the image zoom slowly and darken */
+.premium-service-card:hover .service-bg-img {
+  transform: scale(1.1);
+  opacity: 0.3;
+}
+
+.service-content {
+  position: relative;
+  z-index: 10;
+  padding: 30px 25px;
+  background: linear-gradient(to top, rgba(17,24,39,1) 0%, rgba(17,24,39,0.9) 60%, transparent 100%);
+  text-align: left;
+  transition: transform 0.3s;
+}
+
+.service-content h3 {
+  font-size: 1.8rem;
+  margin: 0 0 10px 0;
+  color: white;
+  letter-spacing: 0.5px;
+}
+
+.service-content p {
+  color: #d1d5db;
+  font-size: 0.95rem;
+  margin-bottom: 25px;
+  line-height: 1.5;
+}
+
+.service-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 20px;
+}
+
+.service-price-tag {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #f59e0b; /* Gold Accent */
+  margin: 0;
+}
+
+.service-book-btn {
+  background: transparent;
+  color: white;
+  border: 2px solid #f59e0b;
+  padding: 8px 20px;
+  border-radius: 6px;
+  font-weight: bold;
+  transition: all 0.3s;
+  text-decoration: none;
+}
+
+/* Button fills in with gold when hovered */
+.premium-service-card:hover .service-book-btn {
+  background: #f59e0b;
+  color: #111827;
+}
+
+/* --- Team/Barbers Grid (From Image 1 & 3) --- */
+.bg-dark {
+  background-color: #111827;
+}
+
+.bg-dark .section-title {
+  color: white;
+}
+
+.team-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 30px;
+}
+
+.team-card {
+  background: #1f2937;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.3);
+}
+
+.team-image {
+  width: 100%;
+  height: 350px;
+  object-fit: cover;
+  object-position: center 15%;
+  filter: grayscale(40%);
+  transition: filter 0.3s;
+}
+
+.team-card:hover .team-image {
+  filter: grayscale(0%);
+}
+
+.team-info {
+  padding: 20px;
+  color: white;
+}
+
+.team-name {
+  font-size: 1.3rem;
+  font-weight: bold;
+  margin: 0;
+}
+
+.team-role {
+  color: #f59e0b;
+  font-size: 0.9rem;
+  margin: 5px 0 15px 0;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.team-desc {
+  font-size: 0.9rem;
+  color: #9ca3af;
+  line-height: 1.5;
+}
+
+/* --- Booking Page Styles --- */
+.booking-page-wrapper {
+  min-height: calc(100vh - 70px);
+  background: linear-gradient(to bottom, #f8f9fa, #e5e7eb);
+  padding: 60px 20px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.booking-card {
+  background: white;
+  width: 100%;
+  max-width: 600px;
+  border-radius: 16px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  padding: 40px;
+  border-top: 5px solid #111827;
+}
+
+.booking-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.booking-header h2 {
+  font-size: 2.2rem;
+  color: #111827;
+  margin: 0 0 10px 0;
+  font-weight: 800;
+}
+
+.booking-header p {
+  color: #6b7280;
+  margin: 0;
+}
+
+.form-group {
+  margin-bottom: 25px;
+}
+
+.form-label {
+  display: block;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 8px;
+  font-size: 0.95rem;
+}
+
+.form-input {
+  width: 100%;
+  padding: 12px 15px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 1rem;
+  background-color: #f9fafb;
+  color: #111827;
+  transition: all 0.2s;
+  box-sizing: border-box; /* Ensures padding doesn't break width */
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #f59e0b;
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2);
+  background-color: white;
+}
+
+/* Time Slot Grid */
+.time-slot-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.time-slot-btn {
+  padding: 12px 5px;
+  background-color: white;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  font-weight: 600;
+  color: #4b5563;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+}
+
+.time-slot-btn:hover {
+  border-color: #f59e0b;
+  color: #f59e0b;
+}
+
+.time-slot-btn.active {
+  background-color: #111827;
+  border-color: #111827;
+  color: #f59e0b;
+}
+
+.btn-submit-booking {
+  width: 100%;
+  background-color: #f59e0b;
+  color: #111827;
+  padding: 16px;
+  font-size: 1.1rem;
+  font-weight: 800;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 20px;
+  transition: background-color 0.2s;
+}
+
+.btn-submit-booking:hover {
+  background-color: #d97706;
+}
+
+.btn-submit-booking:disabled {
+  background-color: #e5e7eb;
+  color: #9ca3af;
+  cursor: not-allowed;
+}
+
+.alert-success {
+  background-color: #dcfce7;
+  color: #166534;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  text-align: center;
+  font-weight: bold;
+}
+
+.alert-error {
+  background-color: #fee2e2;
+  color: #991b1b;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  text-align: center;
+  font-weight: bold;
+}
+
+/* --- Authentication Pages (Login & Register) --- */
+.auth-wrapper {
+  min-height: calc(100vh - 70px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Dark overlay on top of a barbershop background image */
+  background: linear-gradient(rgba(17, 24, 39, 0.8), rgba(17, 24, 39, 0.95)), url('https://images.unsplash.com/photo-1503951914875-452162b0f3f1?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80') center/cover;
+  padding: 40px 20px;
+}
+
+.auth-card {
+  background-color: white;
+  width: 100%;
+  max-width: 450px;
+  padding: 40px;
+  border-radius: 16px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  border-top: 5px solid #f59e0b; /* Gold accent line */
+}
+
+.auth-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.auth-title {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #111827;
+  margin: 0 0 10px 0;
+}
+
+.auth-subtitle {
+  color: #6b7280;
+  margin: 0;
+}
+
+.auth-footer {
+  text-align: center;
+  margin-top: 25px;
+  color: #6b7280;
+  font-size: 0.95rem;
+}
+
+.auth-link {
+  color: #f59e0b;
+  font-weight: bold;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.auth-link:hover {
+  color: #d97706;
+  text-decoration: underline;
+}
+
+.btn-block {
+  width: 100%;
+  background-color: #111827;
+  color: white;
+  padding: 14px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: background-color 0.2s;
+}
+
+.btn-block:hover {
+  background-color: #f59e0b;
+  color: #111827;
+}
+
+/* --- Dashboard & Appointment Cards --- */
+.dashboard-wrapper {
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 0 20px;
+  min-height: calc(100vh - 150px);
+}
+
+.dashboard-header {
+  margin-bottom: 30px;
+  border-bottom: 2px solid #e5e7eb;
+  padding-bottom: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.dashboard-title {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #111827;
+  margin: 0;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 25px;
+}
+
+.appointment-card {
+  background: white;
+  border-radius: 12px;
+  padding: 25px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  border-left: 6px solid #f59e0b; /* Gold accent */
+  transition: transform 0.2s;
+}
+
+.appointment-card:hover {
+  transform: translateY(-5px);
+}
+
+.appointment-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 15px;
+}
+
+.appointment-service {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #111827;
+  margin: 0;
+}
+
+.appointment-price {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #6b7280;
+  margin: 5px 0 0 0;
+}
+
+/* Status Badges */
+.badge {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.badge-pending { background-color: #fef3c7; color: #d97706; }
+.badge-completed { background-color: #dcfce7; color: #166534; }
+.badge-cancelled { background-color: #fee2e2; color: #991b1b; }
+.badge-confirmed { background-color: #dbeafe; color: #1e40af; }
+
+.appointment-details {
+  background-color: #f9fafb;
+  padding: 15px;
+  border-radius: 8px;
+  margin-top: 15px;
+  border: 1px solid #f3f4f6;
+}
+
+.detail-row {
+  display: flex;
+  margin-bottom: 8px;
+  font-size: 0.95rem;
+}
+
+.detail-row:last-child {
+  margin-bottom: 0;
+}
+
+.detail-label {
+  width: 90px;
+  color: #6b7280;
+  font-weight: 600;
+}
+
+.detail-value {
+  color: #111827;
+  font-weight: bold;
+}
+
+
+/* --- Admin Dashboard Specifics --- */
+.admin-tabs {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 30px;
+  border-bottom: 2px solid #e5e7eb;
+  padding-bottom: 15px;
+}
+
+.tab-btn {
+  background: transparent;
+  border: none;
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #6b7280;
+  cursor: pointer;
+  padding: 10px 20px;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.tab-btn:hover {
+  background-color: #f3f4f6;
+  color: #111827;
+}
+
+.tab-btn.active {
+  background-color: #111827;
+  color: #f59e0b;
+}
+
+.admin-status-select {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  font-weight: bold;
+  background-color: white;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.admin-status-select:focus {
+  border-color: #f59e0b;
+}
+
+.service-manager-card {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  margin-bottom: 30px;
+}
+
+.service-list-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  background-color: #f9fafb;
+}
+
+.btn-danger {
+  background-color: #fee2e2;
+  color: #b91c1c;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-danger:hover {
+  background-color: #fca5a5;
+}
+
+/* --- Premium Footer --- */
+.footer-wrapper {
+  background-color: #111827;
+  color: #9ca3af;
+  padding: 60px 20px 20px;
+  margin-top: 40px;
+  border-top: 4px solid #f59e0b; /* Gold accent line */
+}
+
+.footer-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 40px;
+  margin-bottom: 40px;
+}
+
+.footer-col h3 {
+  color: white;
+  font-size: 1.2rem;
+  margin-bottom: 20px;
+  letter-spacing: 1px;
+}
+
+.footer-logo {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: white;
+  text-decoration: none;
+  letter-spacing: 2px;
+  display: block;
+  margin-bottom: 15px;
+}
+
+.footer-logo span {
+  color: #f59e0b;
+}
+
+.footer-text {
+  line-height: 1.6;
+  margin-bottom: 15px;
+}
+
+.footer-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-list li {
+  margin-bottom: 12px;
+}
+
+.footer-list a {
+  color: #9ca3af;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.footer-contact-link:hover {
+  color: #f59e0b !important;
+  text-decoration: underline !important;
+}
+
+.footer-list a:hover {
+  color: #f59e0b;
+}
+
+.footer-bottom {
+  text-align: center;
+  padding-top: 20px;
+  border-top: 1px solid #374151;
+  font-size: 0.9rem;
+}
+
+/* --- Hamburger Menu Icon --- */
+.hamburger {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 1.8rem;
+  cursor: pointer;
+  color: #111827;
+}
+
+/* =========================================
+   MOBILE RESPONSIVENESS (SMARTPHONES)
+========================================= */
+@media (max-width: 768px) {
+  
+  /* 1. Mobile Navbar */
+  .navbar {
+    padding: 15px 20px;
+  }
+  
+  .hamburger {
+    display: block; /* Show the button on mobile */
+  }
+
+  .nav-links {
+    position: absolute;
+    top: 65px;
+    left: 0;
+    width: 100%;
+    background-color: white;
+    flex-direction: column; /* Stacks links vertically */
+    padding: 20px 0;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    gap: 20px;
+    display: none; /* Hidden by default on mobile */
+  }
+
+  .nav-links.mobile-open {
+    display: flex; /* Shows only when hamburger is clicked */
+  }
+
+  /* 2. Dashboards */
+  .dashboard-grid {
+    grid-template-columns: 1fr; 
+  }
+
+  .dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+
+  /* 3. Compact Mobile Footer */
+  .footer-wrapper {
+    padding: 40px 15px 15px; 
+  }
+  
+  .footer-container {
+    grid-template-columns: 1fr 1fr; 
+    gap: 20px;
+    text-align: left;
+  }
+
+  .footer-col:first-child {
+    grid-column: 1 / -1; 
+    margin-bottom: 10px;
+  }
+
+  /* 4. Fix Booking Calendar Time Slots */
+  .time-slot-grid {
+    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+  }
+  
+  /* 5. Admin Dashboard Tabs */
+  .admin-tabs {
+    flex-direction: column;
+  }
+  .tab-btn {
+    width: 100%;
+  }
+}
+
+/* --- Global Smooth Scroll --- */
+html {
+  scroll-behavior: smooth;
+}
+
+/* --- Active Navbar Link Styling --- */
+.active-link {
+  color: #f59e0b !important; /* Gold */
+  font-weight: 800;
+  position: relative;
+}
+
+.active-link::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: #f59e0b;
+  border-radius: 2px;
+}
+
+/* --- Premium Hover Scale Effects --- */
+.premium-service-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.premium-service-card:hover {
+  transform: translateY(-10px) scale(1.02);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.team-card {
+  transition: transform 0.3s ease;
+}
+
+.team-card:hover {
+  transform: translateY(-8px);
+}
+
+/* Add a cool hover effect to your Dad's photo! */
+.team-card:hover .team-image {
+  filter: grayscale(0%); /* Turns from black/white to full color on hover */
+  transform: scale(1.05); /* Zooms the photo slightly inside the box */
+}

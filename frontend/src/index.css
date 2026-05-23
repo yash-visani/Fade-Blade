@@ -910,6 +910,44 @@ html, body {
   margin-left: 5px;
 }
 
+/* --- Floating WhatsApp Button --- */
+.whatsapp-float {
+  position: fixed;
+  width: 60px;
+  height: 60px;
+  bottom: 30px;
+  right: 30px;
+  background-color: #25d366; /* Official WhatsApp Green */
+  color: #FFF;
+  border-radius: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+  z-index: 1000; /* Keeps it above everything else */
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.whatsapp-float:hover {
+  transform: scale(1.1); /* Slight zoom on hover */
+  color: #FFF;
+  box-shadow: 0px 6px 14px rgba(0, 0, 0, 0.4);
+}
+
+/* Make it slightly smaller on mobile phones so it doesn't block text */
+@media (max-width: 768px) {
+  .whatsapp-float {
+    width: 50px;
+    height: 50px;
+    bottom: 20px;
+    right: 20px;
+  }
+  .whatsapp-float svg {
+    width: 25px;
+    height: 25px;
+  }
+}
+
 /* =========================================
    MOBILE RESPONSIVENESS (SMARTPHONES)
 ========================================= */

@@ -5,6 +5,7 @@ import 'aos/dist/aos.css'; // <-- Import AOS CSS
 
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
+import WhatsAppButton from './components/WhatsAppButton';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -35,6 +36,7 @@ function App() {
           <Route path="/book" element={<Booking />} />
         </Routes>
       </main>
+      <WhatsAppButton /> {/* <-- 2. Add it right here! */}
       <Footer />
     </Router>
   );

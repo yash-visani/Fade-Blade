@@ -46,43 +46,75 @@ const createAppointment = async (req, res) => {
 };
 
 // Get available slots based on date AND preferred barber
+// Get available slots based on date AND preferred barber
 const getAvailableSlots = async (req, res) => {
   try {
     const { date, barber } = req.query;
     
-    // Your shop's standard operating hours
+    // 1. UPDATED: 30-Minute Interval Slots
     const allSlots = [
-      "09:00 AM", "10:00 AM", "11:00 AM", "12:00 PM", 
-      "01:00 PM", "02:00 PM", "03:00 PM", "04:00 PM", 
-      "05:00 PM", "06:00 PM", "07:00 PM"
+      "09:00 AM", "09:30 AM", "10:00 AM", "10:30 AM", "11:00 AM", "11:30 AM", 
+      "12:00 PM", "12:30 PM", "01:00 PM", "01:30 PM", "02:00 PM", "02:30 PM", 
+      "03:00 PM", "03:30 PM", "04:00 PM", "04:30 PM", "05:00 PM", "05:30 PM", 
+      "06:00 PM", "06:30 PM", "07:00 PM"
     ];
 
-    // Find all active (not cancelled) appointments for this specific date
     const appointments = await Appointment.find({ 
       date: date,
       status: { $ne: 'cancelled' } 
     });
 
+    // --- NEW: TIME TRAVEL PREVENTION LOGIC ---
+    // Get current date and time exactly in IST (India Standard Time)
+    const nowIST = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" }));
+    
+    const yyyy = nowIST.getFullYear();
+    const mm = String(nowIST.getMonth() + 1).padStart(2, '0');
+    const dd = String(nowIST.getDate()).padStart(2, '0');
+    const todayString = `${yyyy}-${mm}-${dd}`; // Formats as YYYY-MM-DD
+    
+    const isToday = (date === todayString);
+    const currentMinutes = nowIST.getHours() * 60 + nowIST.getMinutes();
+
+    // Helper function to convert "02:30 PM" into total minutes (to compare time mathematically)
+    const timeToMinutes = (timeStr) => {
+      const [time, modifier] = timeStr.split(' ');
+      let [hours, minutes] = time.split(':');
+      hours = parseInt(hours, 10);
+      minutes = parseInt(minutes, 10);
+      if (hours === 12 && modifier === 'AM') hours = 0;
+      if (hours < 12 && modifier === 'PM') hours += 12;
+      return hours * 60 + minutes;
+    };
+    // ------------------------------------------
+
     // Run the Smart Calendar Filter
     const availableSlots = allSlots.filter(slot => {
-      // Find all bookings sitting exactly in this specific time slot
-      const bookingsAtThisTime = appointments.filter(app => app.timeSlot === slot);
-
-      // Rule 1: Is the entire shop completely full? (3 Barbers = Max 3 Bookings)
-      if (bookingsAtThisTime.length >= 3) {
-        return false; // Hide this slot, all chairs are taken!
-      }
-
-      // Rule 2: Did the customer request a specific barber?
-      if (barber && barber !== 'Any') {
-        // Check if the specific barber they asked for is already booked at this time
-        const isRequestedBarberBusy = bookingsAtThisTime.some(app => app.preferredBarber === barber);
-        if (isRequestedBarberBusy) {
-          return false; // Hide this slot, their requested barber is busy!
+      
+      // Rule 1: TIME TRAVEL FIX
+      // If they are booking for today, hide any slots that have already passed!
+      if (isToday) {
+        const slotMinutes = timeToMinutes(slot);
+        if (slotMinutes <= currentMinutes) {
+          return false; // Hide this slot, it's in the past!
         }
       }
 
-      // If there are empty chairs and their requested barber isn't busy, keep the slot open!
+      const bookingsAtThisTime = appointments.filter(app => app.timeSlot === slot);
+
+      // Rule 2: Is the entire shop completely full? (3 Barbers = Max 3 Bookings)
+      if (bookingsAtThisTime.length >= 3) {
+        return false; 
+      }
+
+      // Rule 3: Did the customer request a specific barber?
+      if (barber && barber !== 'Any') {
+        const isRequestedBarberBusy = bookingsAtThisTime.some(app => app.preferredBarber === barber);
+        if (isRequestedBarberBusy) {
+          return false; 
+        }
+      }
+
       return true;
     });
 
@@ -92,7 +124,6 @@ const getAvailableSlots = async (req, res) => {
     res.status(500).json({ message: 'Server Error fetching slots' });
   }
 };
-
 // @desc    Get logged in user's appointments
 // @route   GET /api/bookings/myappointments
 const getUserAppointments = async (req, res) => {

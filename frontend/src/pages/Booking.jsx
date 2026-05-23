@@ -104,7 +104,7 @@ useEffect(() => {
 
         <form onSubmit={handleBooking}>
           
-          {/* Service Selection */}
+          {/* 1. Service Selection */}
           <div className="form-group">
             <label className="form-label">Select Service</label>
             <select 
@@ -125,7 +125,23 @@ useEffect(() => {
             </select>
           </div>
 
-          {/* Date Selection */}
+          {/* 2. MOVED: Preferred Barber Dropdown comes BEFORE Date! */}
+          <div className="form-group" style={{ marginBottom: '20px' }}>
+            <label className="form-label">Select Your Barber</label>
+            <select 
+              className="form-input" 
+              value={preferredBarber}
+              onChange={(e) => setPreferredBarber(e.target.value)}
+              required
+            >
+              <option value="Any">No Preference (First Available)</option>
+              <option value="Jayesh">Jayesh (Head Barber)</option>
+              <option value="Yash">Yash (Senior Stylist)</option>
+              <option value="Sujal">Sujal (Color & Style Expert)</option>
+            </select>
+          </div>
+
+          {/* 3. Date Selection */}
           <div className="form-group">
             <label className="form-label">Choose Date</label>
             <input 
@@ -138,9 +154,9 @@ useEffect(() => {
             />
           </div>
 
-          {/* Time Slot Selection */}
+          {/* 4. Time Slot Selection */}
           {date && (
-            <div className="form-group">
+            <div className="form-group" style={{ marginBottom: '25px' }}>
               <label className="form-label">Available Time Slots</label>
               {availableSlots.length > 0 ? (
                 <div className="time-slot-grid">
@@ -163,23 +179,7 @@ useEffect(() => {
             </div>
           )}
 
-          {/* --- NEW: Preferred Barber Dropdown --- */}
-          <div className="form-group" style={{ marginBottom: '25px' }}>
-            <label className="form-label">Preferred Barber</label>
-            <select 
-              className="form-input" 
-              value={preferredBarber}
-              onChange={(e) => setPreferredBarber(e.target.value)}
-              required
-            >
-              <option value="Any">No Preference (First Available)</option>
-              <option value="Jayesh">Jayesh (Head Barber)</option>
-              <option value="Yash">Yash (Senior Stylist)</option>
-              <option value="Sujal">Sujal (Color & Style Expert)</option>
-            </select>
-          </div>
-
-          {/* Submit Button */}
+          {/* 5. Submit Button */}
           <button 
             type="submit" 
             className="btn-submit-booking"

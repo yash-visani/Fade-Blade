@@ -49,20 +49,21 @@ const Booking = () => {
     fetchServices();
   }, [location.search]);
 
-  useEffect(() => {
+useEffect(() => {
     if (date) {
       const fetchSlots = async () => {
         try {
-          const response = await api.get(`/bookings/available-slots?date=${date}`);
+          // --- NEW: We now send BOTH the date and the requested barber to the backend! ---
+          const response = await api.get(`/bookings/available-slots?date=${date}&barber=${preferredBarber}`);
           setAvailableSlots(response.data);
-          setTimeSlot('');
+          setTimeSlot(''); // Reset the time slot if they change barbers
         } catch (err) {
           console.error('Failed to fetch slots', err);
         }
       };
       fetchSlots();
     }
-  }, [date]);
+  }, [date, preferredBarber]);
 
   const handleBooking = async (e) => {
     e.preventDefault();

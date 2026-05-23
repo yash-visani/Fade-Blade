@@ -35,63 +35,51 @@ const createAppointment = async (req, res) => {
 
 // @desc    Get available time slots for a specific date
 // @route   GET /api/bookings/available-slots
-const getAvailableSlots = async (req, res) => {
+// Get available slots based on date AND preferred barber
+exports.getAvailableSlots = async (req, res) => {
   try {
-    const { date } = req.query; // e.g., "2026-05-17"
-    if (!date) return res.status(400).json({ message: 'Please provide a date' });
-
-    // Master list of shop hours
-    const allBusinessSlots = [
-      "09:00 AM", "09:30 AM", "10:00 AM", "10:30 AM", "11:00 AM", "11:30 AM",
-      "12:00 PM", "12:30 PM", "01:00 PM", "01:30 PM", "02:00 PM", "02:30 PM",
-      "03:00 PM", "03:30 PM", "04:00 PM", "04:30 PM", "05:00 PM", "05:30 PM",
-      "06:00 PM", "06:30 PM", "07:00 PM", "07:30 PM"
+    const { date, barber } = req.query;
+    
+    // Your shop's standard operating hours
+    const allSlots = [
+      "09:00 AM", "10:00 AM", "11:00 AM", "12:00 PM", 
+      "01:00 PM", "02:00 PM", "03:00 PM", "04:00 PM", 
+      "05:00 PM", "06:00 PM", "07:00 PM"
     ];
 
-    // --- FEATURE 1: PREVENT DOUBLE BOOKINGS (FIXED MODEL NAME HERE) ---
-    const existingBookings = await Appointment.find({ date: date });
+    // Find all active (not cancelled) appointments for this specific date
+    const appointments = await Appointment.find({ 
+      date: date,
+      status: { $ne: 'cancelled' } 
+    });
 
-    // Extract just the time strings of bookings that are NOT cancelled
-    const takenSlots = existingBookings
-      .filter(b => b.status !== 'cancelled')
-      .map(b => b.timeSlot);
+    // Run the Smart Calendar Filter
+    const availableSlots = allSlots.filter(slot => {
+      // Find all bookings sitting exactly in this specific time slot
+      const bookingsAtThisTime = appointments.filter(app => app.timeSlot === slot);
 
-    // Remove taken slots from our master list
-    let availableSlots = allBusinessSlots.filter(slot => !takenSlots.includes(slot));
+      // Rule 1: Is the entire shop completely full? (Max 3 barbers = Max 3 bookings)
+      if (bookingsAtThisTime.length >= 3) {
+        return false; // Hide this slot, no chairs left!
+      }
 
-    // --- FEATURE 2: PREVENT TIME TRAVEL (PAST TIMES) ---
-    const nowStr = new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" });
-    const currentDateIST = new Date(nowStr);
+      // Rule 2: Did the customer request a specific barber?
+      if (barber && barber !== 'Any') {
+        // Check if the specific barber they asked for is already cutting hair at this time
+        const isRequestedBarberBusy = bookingsAtThisTime.some(app => app.preferredBarber === barber);
+        if (isRequestedBarberBusy) {
+          return false; // Hide this slot, their favorite barber is busy!
+        }
+      }
 
-    const todayStringIST = currentDateIST.getFullYear() + '-' +
-      String(currentDateIST.getMonth() + 1).padStart(2, '0') + '-' +
-      String(currentDateIST.getDate()).padStart(2, '0');
+      // If there are empty chairs and their barber isn't busy, keep the slot open!
+      return true;
+    });
 
-    if (date === todayStringIST) {
-      const currentHour = currentDateIST.getHours();
-      const currentMinute = currentDateIST.getMinutes();
-
-      availableSlots = availableSlots.filter(slot => {
-        const [time, modifier] = slot.split(' ');
-        let [hours, minutes] = time.split(':');
-        hours = parseInt(hours, 10);
-        minutes = parseInt(minutes, 10);
-
-        if (modifier === 'PM' && hours !== 12) hours += 12;
-        if (modifier === 'AM' && hours === 12) hours = 0;
-
-        if (hours < currentHour) return false;
-        if (hours === currentHour && minutes <= currentMinute) return false;
-        
-        return true; 
-      });
-    }
-
-    res.json(availableSlots);
-    
+    res.status(200).json(availableSlots);
   } catch (error) {
-    console.error("Error in getAvailableSlots:", error);
-    res.status(500).json({ message: 'Server Error fetching slots', error: error.message });
+    console.error("Error fetching slots:", error);
+    res.status(500).json({ message: 'Server Error fetching slots' });
   }
 };
 

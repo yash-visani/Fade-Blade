@@ -51,16 +51,54 @@ const AdminDashboard = () => {
     } catch (err) { alert('Failed to delete service'); }
   };
 
+  // ==========================================
+  // --- QUICK STATS MATH LOGIC ---
+  // ==========================================
+  const todayTimestamp = new Date().setHours(0, 0, 0, 0);
+  
+  const todaysAppointments = appointments.filter(app => {
+    const appDateTimestamp = new Date(app.date).setHours(0, 0, 0, 0);
+    return appDateTimestamp === todayTimestamp && app.status !== 'cancelled';
+  }).length;
+
+  const completedAppointments = appointments.filter(app => 
+    app.status === 'completed'
+  ).length;
+
+  const totalRevenue = appointments
+    .filter(app => app.status === 'completed')
+    .reduce((sum, app) => sum + (app.totalPrice || 0), 0);
+  // ==========================================
+
   if (loading) return <div className="dashboard-wrapper"><h2>Loading headquarters...</h2></div>;
 
   return (
     <div className="dashboard-wrapper">
-      <div className="dashboard-header">
+      <div className="dashboard-header" style={{ marginBottom: '20px' }}>
         <div>
           <h2 className="dashboard-title">Command Center</h2>
           <p style={{ color: '#6b7280', margin: '5px 0 0 0' }}>Manage your shop's schedule and menu.</p>
         </div>
       </div>
+
+      {/* --- THE NEW STAT CARDS UI --- */}
+      <div className="admin-stats-grid">
+        <div className="stat-card">
+          <span className="stat-card-title">Today's Bookings</span>
+          <span className="stat-card-value">{todaysAppointments}</span>
+        </div>
+        
+        <div className="stat-card">
+          <span className="stat-card-title">Total Completed</span>
+          <span className="stat-card-value">{completedAppointments}</span>
+        </div>
+        
+        <div className="stat-card">
+          <span className="stat-card-title">Total Revenue</span>
+          <span className="stat-card-value">₹{totalRevenue.toLocaleString('en-IN')}</span>
+        </div>
+      </div>
+      {/* -------------------------------- */}
 
       {/* TABS */}
       <div className="admin-tabs">

@@ -5,25 +5,37 @@ const Appointment = require('../models/Appointment');
 // @route   POST /api/bookings
 const createAppointment = async (req, res) => {
   try {
-    const { service, date, timeSlot, totalPrice } = req.body;
+    // --- FIXED: Now we accept preferredBarber from the frontend! ---
+    const { service, date, timeSlot, preferredBarber, totalPrice } = req.body;
 
-    // 1. Check for Double Booking
-    const slotTaken = await Appointment.findOne({ 
+    // 1. Check for Double Booking using Smart Math
+    // Find ALL active appointments at this exact date and time
+    const existingAppointments = await Appointment.find({ 
         date, 
         timeSlot, 
         status: { $ne: 'cancelled' } 
     });
 
-    if (slotTaken) {
-      return res.status(400).json({ message: 'This time slot is already booked.' });
+    // Rule 1: Are all 3 chairs full?
+    if (existingAppointments.length >= 3) {
+      return res.status(400).json({ message: 'This time slot is completely full.' });
     }
 
-    // 2. Create the appointment if the slot is free
+    // Rule 2: If they asked for a specific barber, is THAT barber already booked?
+    if (preferredBarber && preferredBarber !== 'Any') {
+      const isBarberBusy = existingAppointments.some(app => app.preferredBarber === preferredBarber);
+      if (isBarberBusy) {
+        return res.status(400).json({ message: `${preferredBarber} is already booked at this time.` });
+      }
+    }
+
+    // 2. Create the appointment since chairs are open
     const appointment = await Appointment.create({
       user: req.user._id, // Comes from auth middleware
       service,
       date,
       timeSlot,
+      preferredBarber: preferredBarber || 'Any', // --- FIXED: Save the requested barber! ---
       totalPrice
     });
 
@@ -33,10 +45,8 @@ const createAppointment = async (req, res) => {
   }
 };
 
-// @desc    Get available time slots for a specific date
-// @route   GET /api/bookings/available-slots
 // Get available slots based on date AND preferred barber
-exports.getAvailableSlots = async (req, res) => {
+const getAvailableSlots = async (req, res) => {
   try {
     const { date, barber } = req.query;
     
@@ -58,21 +68,21 @@ exports.getAvailableSlots = async (req, res) => {
       // Find all bookings sitting exactly in this specific time slot
       const bookingsAtThisTime = appointments.filter(app => app.timeSlot === slot);
 
-      // Rule 1: Is the entire shop completely full? (Max 3 barbers = Max 3 bookings)
+      // Rule 1: Is the entire shop completely full? (3 Barbers = Max 3 Bookings)
       if (bookingsAtThisTime.length >= 3) {
-        return false; // Hide this slot, no chairs left!
+        return false; // Hide this slot, all chairs are taken!
       }
 
       // Rule 2: Did the customer request a specific barber?
       if (barber && barber !== 'Any') {
-        // Check if the specific barber they asked for is already cutting hair at this time
+        // Check if the specific barber they asked for is already booked at this time
         const isRequestedBarberBusy = bookingsAtThisTime.some(app => app.preferredBarber === barber);
         if (isRequestedBarberBusy) {
-          return false; // Hide this slot, their favorite barber is busy!
+          return false; // Hide this slot, their requested barber is busy!
         }
       }
 
-      // If there are empty chairs and their barber isn't busy, keep the slot open!
+      // If there are empty chairs and their requested barber isn't busy, keep the slot open!
       return true;
     });
 

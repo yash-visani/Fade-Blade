@@ -8,12 +8,15 @@ const Booking = () => {
   const [date, setDate] = useState('');
   const [availableSlots, setAvailableSlots] = useState([]);
   const [timeSlot, setTimeSlot] = useState('');
+  
+  // --- NEW: Preferred Barber State ---
+  const [preferredBarber, setPreferredBarber] = useState('Any');
+  
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
   const location = useLocation();
 
-  // SINGLE useEffect to fetch services and check the URL
   useEffect(() => {
     const fetchServices = async () => {
       try {
@@ -25,20 +28,14 @@ const Booking = () => {
           const searchParams = new URLSearchParams(location.search);
           const serviceQuery = searchParams.get('service');
 
-          console.log("1. The URL is asking for:", serviceQuery);
-          console.log("2. The database has these services:", fetchedServices.map(s => s.name));
-
           if (serviceQuery) {
-            // Added .trim() to ignore accidental spaces
             const matchedService = fetchedServices.find(
               (s) => s.name.toLowerCase().trim() === serviceQuery.toLowerCase().trim()
             );
             
             if (matchedService) {
-              console.log("3. Match found! Selecting:", matchedService.name);
               setSelectedService(matchedService._id);
             } else {
-              console.log("3. No match found! Defaulting to the first service.");
               setSelectedService(fetchedServices[0]._id);
             }
           } else {
@@ -52,7 +49,6 @@ const Booking = () => {
     fetchServices();
   }, [location.search]);
 
-  // Fetch available slots when a date is selected
   useEffect(() => {
     if (date) {
       const fetchSlots = async () => {
@@ -77,10 +73,12 @@ const Booking = () => {
       const serviceObj = services.find((s) => s._id === selectedService);
       const totalPrice = serviceObj ? serviceObj.price : 0;
 
+      // --- NEW: Added preferredBarber to the payload ---
       await api.post('/bookings', {
         service: [selectedService],
         date,
         timeSlot,
+        preferredBarber, 
         totalPrice,
       });
 
@@ -163,6 +161,22 @@ const Booking = () => {
               )}
             </div>
           )}
+
+          {/* --- NEW: Preferred Barber Dropdown --- */}
+          <div className="form-group" style={{ marginBottom: '25px' }}>
+            <label className="form-label">Preferred Barber</label>
+            <select 
+              className="form-input" 
+              value={preferredBarber}
+              onChange={(e) => setPreferredBarber(e.target.value)}
+              required
+            >
+              <option value="Any">No Preference (First Available)</option>
+              <option value="Jayesh">Jayesh (Head Barber)</option>
+              <option value="Yash">Yash (Senior Stylist)</option>
+              <option value="Sujal">Sujal (Color & Style Expert)</option>
+            </select>
+          </div>
 
           {/* Submit Button */}
           <button 

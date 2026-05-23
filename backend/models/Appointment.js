@@ -5,6 +5,7 @@ const appointmentSchema = new mongoose.Schema({
   service: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Service', required: true }],
   date: { type: Date, required: true },
   timeSlot: { type: String, required: true }, // e.g., "10:30 AM"
+  preferredBarber: { type: String, default: 'Any' },
   status: { type: String, enum: ['pending', 'confirmed', 'completed', 'cancelled'], default: 'pending' },
   totalPrice: { type: Number, required: true }
 }, { timestamps: true });

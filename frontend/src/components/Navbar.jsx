@@ -18,6 +18,8 @@ const Navbar = () => {
   };
 
   const closeMenu = () => setIsOpen(false);
+  
+  // This clever function checks if the URL matches the link, so it knows when to highlight it!
   const isActive = (path) => location.pathname === path ? 'active-link' : '';
 
   return (
@@ -37,6 +39,10 @@ const Navbar = () => {
         
         <Link to="/" className={`nav-item ${isActive('/')}`} onClick={closeMenu}>Home</Link>
         
+        {/* --- FIXED: Lookbook now uses nav-item, isActive, and closeMenu! --- */}
+        <Link to="/gallery" className={`nav-item ${isActive('/gallery')}`} onClick={closeMenu}>Lookbook</Link>
+        {/* ----------------------------------------------------------------- */}
+
         {token ? (
           <>
             {role === 'admin' ? (

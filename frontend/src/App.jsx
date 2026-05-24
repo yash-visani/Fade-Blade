@@ -12,6 +12,7 @@ import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import AdminDashboard from './pages/AdminDashboard';
 import Booking from './pages/Booking';
+import Gallery from './pages/Gallery';
 
 function App() {
   // --- Initialize Scroll Animations ---
@@ -34,6 +35,7 @@ function App() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/book" element={<Booking />} />
+          <Route path="/gallery" element={<Gallery />} />
         </Routes>
       </main>
       <WhatsAppButton /> {/* <-- 2. Add it right here! */}

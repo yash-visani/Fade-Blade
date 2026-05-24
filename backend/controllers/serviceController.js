@@ -19,15 +19,18 @@ const getServices = async (req, res) => {
 // ==========================================
 // @desc    Create a brand new service
 // @route   POST /api/services
+// @desc    Create a brand new service
+// @route   POST /api/services
 const createService = async (req, res) => {
   try {
-    const { name, price, duration, description } = req.body;
+    const { name, price, duration, description, category } = req.body;
     
     const service = await Service.create({
       name,
       price,
       duration,
-      description
+      description,
+      category: category || 'Haircut' // <-- FIXED: Automatically sets a category!
     });
     
     res.status(201).json(service);
@@ -36,16 +39,16 @@ const createService = async (req, res) => {
   }
 };
 
-// @desc    Update an existing service (e.g., change price)
+// @desc    Update an existing service
 // @route   PUT /api/services/:id
 const updateService = async (req, res) => {
   try {
-    const { name, price, duration, description } = req.body;
+    const { name, price, duration, description, category } = req.body;
     
     const service = await Service.findByIdAndUpdate(
       req.params.id,
-      { name, price, duration, description },
-      { new: true } // Returns the newly updated data
+      { name, price, duration, description, category: category || 'Haircut' }, // <-- FIXED
+      { new: true } 
     );
 
     if (!service) {

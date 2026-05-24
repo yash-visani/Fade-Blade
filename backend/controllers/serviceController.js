@@ -1,43 +1,82 @@
 const Service = require('../models/Service');
 
-// @desc    Get all services
+// ==========================================
+// PUBLIC FUNCTION
+// ==========================================
+// @desc    Get all services for the Booking Page
 // @route   GET /api/services
 const getServices = async (req, res) => {
   try {
     const services = await Service.find({});
-    res.json(services);
+    res.status(200).json(services);
   } catch (error) {
-    res.status(500).json({ message: 'Server error', error: error.message });
+    res.status(500).json({ message: 'Server Error fetching services', error: error.message });
   }
 };
 
-// @desc    Create a new service (Admin only)
+// ==========================================
+// ADMIN FUNCTIONS
+// ==========================================
+// @desc    Create a brand new service
 // @route   POST /api/services
 const createService = async (req, res) => {
   try {
-    const { name, description, category, price, duration } = req.body;
-    const service = await Service.create({ name, description, category, price, duration });
+    const { name, price, duration, description } = req.body;
+    
+    const service = await Service.create({
+      name,
+      price,
+      duration,
+      description
+    });
+    
     res.status(201).json(service);
   } catch (error) {
-    res.status(500).json({ message: 'Server error', error: error.message });
+    res.status(500).json({ message: 'Failed to create service', error: error.message });
   }
 };
 
-// @desc    Delete a service (Admin only)
-// @route   DELETE /api/services/:id
-const deleteService = async (req, res) => {
+// @desc    Update an existing service (e.g., change price)
+// @route   PUT /api/services/:id
+const updateService = async (req, res) => {
   try {
-    const service = await Service.findById(req.params.id);
+    const { name, price, duration, description } = req.body;
+    
+    const service = await Service.findByIdAndUpdate(
+      req.params.id,
+      { name, price, duration, description },
+      { new: true } // Returns the newly updated data
+    );
+
     if (!service) {
       return res.status(404).json({ message: 'Service not found' });
     }
-    
-    // Mongoose 6+ uses deleteOne()
-    await Service.deleteOne({ _id: req.params.id }); 
-    res.json({ message: 'Service removed' });
+
+    res.status(200).json(service);
   } catch (error) {
-    res.status(500).json({ message: 'Server error', error: error.message });
+    res.status(500).json({ message: 'Failed to update service', error: error.message });
   }
 };
 
-module.exports = { getServices, createService, deleteService };
+// @desc    Delete a service completely
+// @route   DELETE /api/services/:id
+const deleteService = async (req, res) => {
+  try {
+    const service = await Service.findByIdAndDelete(req.params.id);
+    
+    if (!service) {
+      return res.status(404).json({ message: 'Service not found' });
+    }
+
+    res.status(200).json({ message: 'Service successfully removed from the menu' });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to delete service', error: error.message });
+  }
+};
+
+module.exports = {
+  getServices,
+  createService,
+  updateService,
+  deleteService
+};

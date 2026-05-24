@@ -1,16 +1,23 @@
 const express = require('express');
 const router = express.Router();
-const { getServices, createService, deleteService } = require('../controllers/serviceController');
+
+const { 
+  getServices, 
+  createService, 
+  updateService, 
+  deleteService 
+} = require('../controllers/serviceController');
+
 const { protect, admin } = require('../middleware/authMiddleware');
 
-// Anyone can view services (GET)
-// Only Admins can add services (POST)
-router.route('/')
-  .get(getServices)
-  .post(protect, admin, createService);
+// === PUBLIC ROUTE ===
+// Anyone can view the menu on the booking page
+router.get('/', getServices);
 
-// Only Admins can delete a specific service (DELETE)
-router.route('/:id')
-  .delete(protect, admin, deleteService);
+// === ADMIN ROUTES ===
+// Only the Admin can add, edit, or delete items
+router.post('/', protect, admin, createService);
+router.put('/:id', protect, admin, updateService);
+router.delete('/:id', protect, admin, deleteService);
 
 module.exports = router;

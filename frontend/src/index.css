@@ -1066,6 +1066,155 @@ html, body {
 }
 
 /* =========================================
+   DIGITAL TICKET STYLES
+========================================= */
+.digital-ticket {
+  background: #111827;
+  width: 100%;
+  max-width: 400px;
+  border-radius: 20px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+  color: white;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid #374151;
+}
+
+/* Creating the "perforated" cutout effect on the sides */
+.digital-ticket::before,
+.digital-ticket::after {
+  content: '';
+  position: absolute;
+  top: 100px;
+  width: 30px;
+  height: 30px;
+  background: #f9fafb; /* Matches your main background color */
+  border-radius: 50%;
+  z-index: 1;
+}
+.digital-ticket::before { left: -15px; }
+.digital-ticket::after { right: -15px; }
+
+.ticket-header {
+  background: #1f2937;
+  padding: 30px 20px;
+  text-align: center;
+  border-bottom: 2px dashed #4b5563;
+}
+
+.ticket-header h2 {
+  color: #f59e0b;
+  margin: 0 0 5px 0;
+  letter-spacing: 2px;
+}
+
+.ticket-header p {
+  color: #9ca3af;
+  font-size: 0.85rem;
+  letter-spacing: 1px;
+  margin: 0;
+}
+
+.ticket-body {
+  padding: 30px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.ticket-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ticket-label {
+  color: #6b7280;
+  font-size: 0.85rem;
+  letter-spacing: 1px;
+}
+
+.ticket-value {
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.ticket-footer {
+  text-align: center;
+  padding: 20px;
+  background: #1f2937;
+}
+
+.barcode {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 2rem;
+  letter-spacing: 2px;
+  color: #9ca3af;
+  margin-bottom: 10px;
+}
+
+.ticket-id {
+  color: #6b7280;
+  font-size: 0.75rem;
+  margin: 0;
+}
+
+/* =========================================
+   BULLETPROOF PRINT STYLES
+========================================= */
+@media print {
+  @page {
+    margin: 0;
+    size: portrait;
+  }
+  
+  body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    background: white;
+    overflow: hidden; /* This instantly kills any second page */
+  }
+
+  /* Hide everything on the screen */
+  body * {
+    visibility: hidden;
+  }
+
+  /* But show the ticket and its contents */
+  .digital-ticket, .digital-ticket * {
+    visibility: visible;
+  }
+
+  /* Completely remove the button from the physical layout */
+  button {
+    display: none !important; 
+  }
+
+  /* Remove the wrapper's padding and height so it doesn't push the ticket down */
+  .ticket-page-wrapper {
+    min-height: 0 !important;
+    padding: 0 !important;
+    gap: 0 !important;
+  }
+
+  /* Pin the ticket to the top center of the page */
+  .digital-ticket {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    transform: translateX(-50%); /* Centers it horizontally only */
+    margin-top: 40px; /* Gives it a nice border at the top of the PDF */
+    box-shadow: none;
+    border: 2px solid #000;
+    page-break-inside: avoid;
+    page-break-after: avoid; 
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
+
+/* =========================================
    MOBILE RESPONSIVENESS (SMARTPHONES)
 ========================================= */
 @media (max-width: 768px) {

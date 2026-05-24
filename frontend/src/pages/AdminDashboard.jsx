@@ -1,196 +1,125 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import api from '../api/axios';
 
-const Booking = () => {
-  const [services, setServices] = useState([]);
-  const [selectedService, setSelectedService] = useState('');
-  const [date, setDate] = useState('');
-  const [availableSlots, setAvailableSlots] = useState([]);
-  const [timeSlot, setTimeSlot] = useState('');
-  
-  // --- NEW: Preferred Barber State ---
-  const [preferredBarber, setPreferredBarber] = useState('Any');
-  
-  const [message, setMessage] = useState('');
+const AdminDashboard = () => {
+  const [allAppointments, setAllAppointments] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+
+  const username = localStorage.getItem('username');
   const navigate = useNavigate();
-  const location = useLocation();
 
   useEffect(() => {
-    const fetchServices = async () => {
+    const fetchAllAppointments = async () => {
       try {
-        const response = await api.get('/services');
-        const fetchedServices = response.data;
-        setServices(fetchedServices);
-        
-        if (fetchedServices.length > 0) {
-          const searchParams = new URLSearchParams(location.search);
-          const serviceQuery = searchParams.get('service');
-
-          if (serviceQuery) {
-            const matchedService = fetchedServices.find(
-              (s) => s.name.toLowerCase().trim() === serviceQuery.toLowerCase().trim()
-            );
-            
-            if (matchedService) {
-              setSelectedService(matchedService._id);
-            } else {
-              setSelectedService(fetchedServices[0]._id);
-            }
-          } else {
-            setSelectedService(fetchedServices[0]._id);
-          }
-        }
+        // We will build this 'all' route in the backend next!
+        const response = await api.get('/bookings/all');
+        setAllAppointments(response.data);
+        setLoading(false);
       } catch (err) {
-        console.error('Failed to fetch services', err);
+        // This will print the EXACT error message the backend sent us!
+        const realError = err.response?.data?.message || err.message || 'Failed to fetch.';
+        setError(`Server says: ${realError}`);
+        setLoading(false);
       }
     };
-    fetchServices();
-  }, [location.search]);
+    fetchAllAppointments();
+  }, []);
 
-  useEffect(() => {
-    if (date) {
-      const fetchSlots = async () => {
-        try {
-          const response = await api.get(`/bookings/available-slots?date=${date}`);
-          setAvailableSlots(response.data);
-          setTimeSlot('');
-        } catch (err) {
-          console.error('Failed to fetch slots', err);
-        }
-      };
-      fetchSlots();
-    }
-  }, [date]);
-
-  const handleBooking = async (e) => {
-    e.preventDefault();
-    setMessage('');
-    setError('');
+  // Admin function to Approve or Cancel
+  const handleStatusUpdate = async (id, newStatus) => {
+    if (!window.confirm(`Are you sure you want to mark this as ${newStatus.toUpperCase()}?`)) return;
 
     try {
-      const serviceObj = services.find((s) => s._id === selectedService);
-      const totalPrice = serviceObj ? serviceObj.price : 0;
+      // We will build this master status route next!
+      await api.put(`/bookings/${id}/status`, { status: newStatus });
 
-      // --- NEW: Added preferredBarber to the payload ---
-      await api.post('/bookings', {
-        service: [selectedService],
-        date,
-        timeSlot,
-        preferredBarber, 
-        totalPrice,
-      });
-
-      setMessage('Appointment Confirmed! Redirecting to dashboard...');
-      setTimeout(() => navigate('/dashboard'), 2000);
+      // Update the screen instantly
+      setAllAppointments(allAppointments.map(app =>
+        app._id === id ? { ...app, status: newStatus } : app
+      ));
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to book appointment.');
+      alert(`Failed to ${newStatus} appointment. Please try again.`);
     }
   };
 
+  if (loading) return <div className="dashboard-wrapper"><h2>Loading Command Center...</h2></div>;
+  if (error) return <div className="dashboard-wrapper"><h2 style={{ color: 'red' }}>{error}</h2></div>;
+
+  // Filter appointments so the Admin sees "Pending" requests right at the top
+  const pendingRequests = allAppointments.filter(app => app.status === 'pending');
+  const otherAppointments = allAppointments.filter(app => app.status !== 'pending');
+
   return (
-    <div className="booking-page-wrapper">
-      <div className="booking-card">
-        
-        <div className="booking-header">
-          <h2>Reserve Your Seat</h2>
-          <p>Select your service, date, and time below.</p>
-        </div>
-        
-        {message && <div className="alert-success">{message}</div>}
-        {error && <div className="alert-error">{error}</div>}
+    <div className="dashboard-wrapper" style={{ maxWidth: '1000px', margin: '0 auto', padding: '20px' }}>
 
-        <form onSubmit={handleBooking}>
-          
-          {/* Service Selection */}
-          <div className="form-group">
-            <label className="form-label">Select Service</label>
-            <select 
-              className="form-input"
-              value={selectedService} 
-              onChange={(e) => setSelectedService(e.target.value)} 
-              required
-            >
-              {services.length === 0 ? (
-                <option value="">Loading services...</option>
-              ) : (
-                services.map((svc) => (
-                  <option key={svc._id} value={svc._id}>
-                    {svc.name} — ₹{svc.price} ({svc.duration} mins)
-                  </option>
-                ))
-              )}
-            </select>
-          </div>
-
-          {/* Date Selection */}
-          <div className="form-group">
-            <label className="form-label">Choose Date</label>
-            <input 
-              type="date" 
-              className="form-input"
-              value={date} 
-              onChange={(e) => setDate(e.target.value)} 
-              required
-              min={new Date().toISOString().split('T')[0]} 
-            />
-          </div>
-
-          {/* Time Slot Selection */}
-          {date && (
-            <div className="form-group">
-              <label className="form-label">Available Time Slots</label>
-              {availableSlots.length > 0 ? (
-                <div className="time-slot-grid">
-                  {availableSlots.map((slot) => (
-                    <button
-                      type="button"
-                      key={slot}
-                      onClick={() => setTimeSlot(slot)}
-                      className={`time-slot-btn ${timeSlot === slot ? 'active' : ''}`}
-                    >
-                      {slot}
-                    </button>
-                  ))}
-                </div>
-              ) : (
-                <p style={{ color: '#ef4444', fontSize: '0.9rem', marginTop: '5px' }}>
-                  Sorry, no slots available on this date.
-                </p>
-              )}
-            </div>
-          )}
-
-          {/* --- NEW: Preferred Barber Dropdown --- */}
-          <div className="form-group" style={{ marginBottom: '25px' }}>
-            <label className="form-label">Preferred Barber</label>
-            <select 
-              className="form-input" 
-              value={preferredBarber}
-              onChange={(e) => setPreferredBarber(e.target.value)}
-              required
-            >
-              <option value="Any">No Preference (First Available)</option>
-              <option value="Jayesh">Jayesh (Head Barber)</option>
-              <option value="Yash">Yash (Senior Stylist)</option>
-              <option value="Sujal">Sujal (Color & Style Expert)</option>
-            </select>
-          </div>
-
-          {/* Submit Button */}
-          <button 
-            type="submit" 
-            className="btn-submit-booking"
-            disabled={!timeSlot || message !== ''} 
-          >
-            {message ? 'Processing...' : 'Confirm Appointment'}
-          </button>
-
-        </form>
+      <div className="dashboard-header" style={{ marginBottom: '30px', borderBottom: '2px solid #e5e7eb', paddingBottom: '20px' }}>
+        <h2 className="dashboard-title" style={{ fontSize: '2rem' }}>Command Center</h2>
+        <p style={{ color: '#6b7280' }}>Master Admin: {username}</p>
       </div>
+
+      {/* --- SECTION 1: ACTION REQUIRED (PENDING) --- */}
+      <h3 style={{ color: '#f59e0b', marginBottom: '15px' }}>⚠️ Action Required: Pending Requests ({pendingRequests.length})</h3>
+
+      {pendingRequests.length === 0 ? (
+        <div style={{ padding: '20px', backgroundColor: '#f9fafb', borderRadius: '8px', marginBottom: '40px', color: '#6b7280' }}>
+          No pending haircut requests. You are all caught up!
+        </div>
+      ) : (
+        <div className="dashboard-grid" style={{ marginBottom: '40px' }}>
+          {pendingRequests.map((app) => (
+            <div key={app._id} className="appointment-card" style={{ borderLeft: '4px solid #f59e0b' }}>
+              <div className="appointment-header">
+                <div>
+                  <h3 className="appointment-service">{app.service[0]?.name || 'Service'}</h3>
+                  <p className="appointment-price">₹{app.totalPrice}</p>
+                </div>
+                <span className="badge badge-pending">Pending</span>
+              </div>
+
+              <div className="appointment-details">
+                <div className="detail-row"><span className="detail-label">Date:</span> <span className="detail-value">{new Date(app.date).toLocaleDateString()}</span></div>
+                <div className="detail-row"><span className="detail-label">Time:</span> <span className="detail-value" style={{ fontWeight: 'bold' }}>{app.timeSlot}</span></div>
+                <div className="detail-row"><span className="detail-label">Barber:</span> <span className="detail-value">{app.preferredBarber}</span></div>
+              </div>
+
+              <div style={{ display: 'flex', gap: '10px', marginTop: '15px' }}>
+                <button onClick={() => handleStatusUpdate(app._id, 'confirmed')} style={{ flex: 1, padding: '10px', backgroundColor: '#10b981', color: 'white', border: 'none', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer' }}>
+                  Approve Slot
+                </button>
+                <button onClick={() => handleStatusUpdate(app._id, 'cancelled')} className="btn-danger" style={{ flex: 1, padding: '10px', borderRadius: '6px', border: 'none', cursor: 'pointer', fontWeight: 'bold' }}>
+                  Deny
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* --- SECTION 2: ALL OTHER BOOKINGS --- */}
+      <h3 style={{ color: '#374151', marginBottom: '15px' }}>Shop Schedule</h3>
+      <div className="dashboard-grid">
+        {otherAppointments.map((app) => (
+          <div key={app._id} className="appointment-card" style={{ opacity: app.status === 'cancelled' ? 0.6 : 1 }}>
+            <div className="appointment-header">
+              <div>
+                <h3 className="appointment-service">{app.service[0]?.name || 'Service'}</h3>
+                <p className="appointment-price">₹{app.totalPrice}</p>
+              </div>
+              <span className={`badge badge-${app.status.toLowerCase()}`}>{app.status}</span>
+            </div>
+
+            <div className="appointment-details">
+              <div className="detail-row"><span className="detail-label">Date:</span> <span className="detail-value">{new Date(app.date).toLocaleDateString()}</span></div>
+              <div className="detail-row"><span className="detail-label">Time:</span> <span className="detail-value">{app.timeSlot}</span></div>
+            </div>
+          </div>
+        ))}
+      </div>
+
     </div>
   );
 };
 
-export default Booking;
+export default AdminDashboard;

@@ -1,29 +1,29 @@
 const express = require('express');
 const router = express.Router();
+
 const { 
-    createAppointment, 
-    getAvailableSlots, 
-    getUserAppointments,
-    getAllAppointments,     // <-- Imported
-    updateAppointmentStatus,
-    cancelAppointment // <-- Imported
+  createAppointment, 
+  getAvailableSlots, 
+  getUserAppointments,
+  cancelAppointment,
+  getAllAppointments,
+  updateAppointmentStatus
 } = require('../controllers/bookingController');
 
-// Import the new admin guard
 const { protect, admin } = require('../middleware/authMiddleware');
 
-// Public route
+// Public routes
 router.get('/available-slots', getAvailableSlots);
 
 // Protected Customer routes
 router.post('/', protect, createAppointment);
 router.get('/myappointments', protect, getUserAppointments);
+router.put('/:id/cancel', protect, cancelAppointment);
 
-// NEW: Protected ADMIN routes
-router.get('/', protect, admin, getAllAppointments); 
+// Protected Admin routes
+router.get('/all', protect, admin, getAllAppointments); 
 router.put('/:id/status', protect, admin, updateAppointmentStatus);
 
-// Route for customer cancellation
-router.put('/:id/cancel', protect, cancelAppointment);
+console.log("🔥 THE NEW ADMIN ROUTES ARE OFFICIALLY LOADED! 🔥");
 
 module.exports = router;

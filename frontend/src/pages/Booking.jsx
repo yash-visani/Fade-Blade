@@ -84,7 +84,12 @@ useEffect(() => {
       });
 
       setMessage('Appointment Confirmed! Redirecting to dashboard...');
-      setTimeout(() => navigate('/dashboard'), 2000);
+      const newBookingData = { service: [selectedService], date, timeSlot, preferredBarber, totalPrice };
+      // Redirect to dashboard instead of the ticket!
+      setTimeout(() => {
+        alert("Booking request sent! Please wait for the Admin to confirm your slot.");
+        navigate('/dashboard');
+      }, 2000);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to book appointment.');
     }

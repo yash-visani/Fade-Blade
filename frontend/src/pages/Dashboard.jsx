@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import api from '../api/axios';
 
 const Dashboard = () => {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  
   const username = localStorage.getItem('username');
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchAppointments = async () => {
@@ -22,15 +24,11 @@ const Dashboard = () => {
     fetchAppointments();
   }, []);
 
-  // --- NEW: Cancel Function ---
   const handleCancel = async (id) => {
     if (!window.confirm('Are you sure you want to cancel this appointment?')) return;
     
     try {
-      // Call the backend route we made earlier
       await api.put(`/bookings/${id}/cancel`);
-      
-      // Update the screen immediately without reloading the page
       setAppointments(appointments.map(app => 
         app._id === id ? { ...app, status: 'cancelled' } : app
       ));
@@ -66,7 +64,7 @@ const Dashboard = () => {
       {appointments.length === 0 ? (
         <div style={{ textAlign: 'center', padding: '50px', backgroundColor: 'white', borderRadius: '12px' }}>
           <h3 style={{ color: '#374151' }}>You don't have any appointments yet!</h3>
-          <p style={{ color: '#6b7280', marginBottom: '20px' }}>Book your first session today and get fresh.</p>
+          <p style={{ color: '#6b7280', margin: '10px 0 20px 0' }}>Book your first session today and get fresh.</p>
           <Link to="/book" className="btn-primary">Book Now</Link>
         </div>
       ) : (
@@ -94,21 +92,40 @@ const Dashboard = () => {
                   <span className="detail-value">{app.timeSlot}</span>
                 </div>
                 <div className="detail-row">
-                  <span className="detail-label">Duration:</span>
-                  <span className="detail-value">{app.service[0]?.duration || '--'} mins</span>
+                  <span className="detail-label">Barber:</span>
+                  <span className="detail-value">{app.preferredBarber || 'Any'}</span>
                 </div>
               </div>
 
-              {/* --- NEW: Conditionally Render Cancel Button --- */}
-              {['pending', 'confirmed'].includes(app.status.toLowerCase()) && (
-                <button 
-                  onClick={() => handleCancel(app._id)}
-                  className="btn-danger"
-                  style={{ marginTop: '15px', width: '100%', padding: '10px' }}
-                >
-                  Cancel Appointment
-                </button>
-              )}
+              {/* --- ACTION BUTTONS --- */}
+              <div style={{ display: 'flex', gap: '10px', marginTop: '15px' }}>
+                
+                {/* 1. Ticket Button (Only visible if CONFIRMED) */}
+                {app.status.toLowerCase() === 'confirmed' ? (
+                  <button 
+                    onClick={() => navigate('/ticket', { state: { booking: app } })}
+                    style={{ flex: 1, padding: '10px', backgroundColor: '#111827', color: '#ffffff', border: 'none', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer' }}
+                  >
+                    Download Ticket
+                  </button>
+                ) : (
+                  <div style={{ flex: 1, padding: '10px', backgroundColor: '#f3f4f6', color: '#6b7280', borderRadius: '6px', textAlign: 'center', fontSize: '0.9rem', fontWeight: 'bold' }}>
+                    {app.status.toLowerCase() === 'cancelled' ? 'Slot Cancelled' : 'Awaiting Approval...'}
+                  </div>
+                )}
+
+                {/* 2. Cancel Button (Only visible if pending or confirmed) */}
+                {['pending', 'confirmed'].includes(app.status.toLowerCase()) && (
+                  <button 
+                    onClick={() => handleCancel(app._id)}
+                    className="btn-danger"
+                    style={{ flex: 1, padding: '10px', borderRadius: '6px', border: 'none', cursor: 'pointer', fontWeight: 'bold' }}
+                  >
+                    Cancel
+                  </button>
+                )}
+
+              </div>
 
             </div>
           ))}

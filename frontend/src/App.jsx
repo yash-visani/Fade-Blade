@@ -13,6 +13,7 @@ import Dashboard from './pages/Dashboard';
 import AdminDashboard from './pages/AdminDashboard';
 import Booking from './pages/Booking';
 import Gallery from './pages/Gallery';
+import Ticket from './pages/Ticket';
 
 function App() {
   // --- Initialize Scroll Animations ---
@@ -36,6 +37,7 @@ function App() {
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/book" element={<Booking />} />
           <Route path="/gallery" element={<Gallery />} />
+          <Route path="/ticket" element={<Ticket />} />
         </Routes>
       </main>
       <WhatsAppButton /> {/* <-- 2. Add it right here! */}

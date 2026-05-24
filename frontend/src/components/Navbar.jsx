@@ -25,8 +25,17 @@ const Navbar = () => {
   return (
     <nav className="navbar">
       
-      <Link to="/" className="nav-logo" onClick={closeMenu}>
-        FADE <span>&</span> BLADE
+      <Link to="/" className="nav-logo" onClick={closeMenu} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+        <svg width="35" height="35" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="100" height="100" rx="20" fill="#111827"/>
+          {/* Yellow/Gold slash */}
+          <path d="M30 70L70 30" stroke="#F59E0B" strokeWidth="8" strokeLinecap="round"/> 
+          <path d="M30 30V70H50" stroke="#FFFFFF" strokeWidth="8" strokeLinejoin="round"/>
+          <path d="M70 70V30H50" stroke="#FFFFFF" strokeWidth="8" strokeLinejoin="round"/>
+        </svg>
+        <span style={{ fontSize: '1.2rem', fontWeight: '800', letterSpacing: '2px', color: '#111827' }}>
+          FADE<span style={{ color: '#F59E0B', margin: '0 5px' }}>&</span>BLADE
+        </span>
       </Link>
 
       {/* Hamburger Icon */}

@@ -6,7 +6,7 @@ const AdminDashboard = () => {
   const [allAppointments, setAllAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  
+
   const username = localStorage.getItem('username');
   const navigate = useNavigate();
 
@@ -27,10 +27,10 @@ const AdminDashboard = () => {
 
   const handleStatusUpdate = async (id, newStatus) => {
     if (!window.confirm(`Are you sure you want to mark this as ${newStatus.toUpperCase()}?`)) return;
-    
+
     try {
       await api.put(`/bookings/${id}/status`, { status: newStatus });
-      setAllAppointments(allAppointments.map(app => 
+      setAllAppointments(allAppointments.map(app =>
         app._id === id ? { ...app, status: newStatus } : app
       ));
     } catch (err) {
@@ -39,22 +39,29 @@ const AdminDashboard = () => {
   };
 
   if (loading) return <div className="dashboard-wrapper"><h2>Loading Command Center...</h2></div>;
-  if (error) return <div className="dashboard-wrapper"><h2 style={{color: 'red'}}>{error}</h2></div>;
+  if (error) return <div className="dashboard-wrapper"><h2 style={{ color: 'red' }}>{error}</h2></div>;
 
   const pendingRequests = allAppointments.filter(app => app.status === 'pending');
   const otherAppointments = allAppointments.filter(app => app.status !== 'pending');
 
   return (
     <div className="dashboard-wrapper" style={{ maxWidth: '1000px', margin: '0 auto', padding: '20px' }}>
-      
-      <div className="dashboard-header" style={{ marginBottom: '30px', borderBottom: '2px solid #e5e7eb', paddingBottom: '20px' }}>
-        <h2 className="dashboard-title" style={{ fontSize: '2rem' }}>Command Center</h2>
-        <p style={{ color: '#6b7280' }}>Master Admin: {username}</p>
+
+      <div className="dashboard-header" style={{ marginBottom: '30px', borderBottom: '2px solid #e5e7eb', paddingBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div>
+          <h2 className="dashboard-title" style={{ fontSize: '2rem' }}>Command Center</h2>
+          <p style={{ color: '#6b7280' }}>Master Admin: {username}</p>
+        </div>
+
+        {/* --- NEW BUTTON --- */}
+        <button onClick={() => navigate('/admin/menu')} className="btn-primary" style={{ padding: '10px 20px' }}>
+          ⚙️ Manage Shop Menu
+        </button>
       </div>
 
       {/* --- SECTION 1: ACTION REQUIRED (PENDING) --- */}
       <h3 style={{ color: '#f59e0b', marginBottom: '15px' }}>⚠️ Action Required: Pending Requests ({pendingRequests.length})</h3>
-      
+
       {pendingRequests.length === 0 ? (
         <div style={{ padding: '20px', backgroundColor: '#f9fafb', borderRadius: '8px', marginBottom: '40px', color: '#6b7280' }}>
           No pending haircut requests. You are all caught up!
@@ -74,14 +81,14 @@ const AdminDashboard = () => {
               <div className="appointment-details">
                 {/* --- NEW: CUSTOMER ROW --- */}
                 <div className="detail-row" style={{ backgroundColor: '#f3f4f6', padding: '8px', borderRadius: '6px', marginBottom: '10px' }}>
-                  <span className="detail-label" style={{ color: '#374151' }}>Customer:</span> 
+                  <span className="detail-label" style={{ color: '#374151' }}>Customer:</span>
                   <span className="detail-value" style={{ fontWeight: '900', color: '#111827', textTransform: 'capitalize' }}>
                     {app.user?.username || 'Guest'}
                   </span>
                 </div>
                 {/* ------------------------- */}
                 <div className="detail-row"><span className="detail-label">Date:</span> <span className="detail-value">{new Date(app.date).toLocaleDateString()}</span></div>
-                <div className="detail-row"><span className="detail-label">Time:</span> <span className="detail-value" style={{fontWeight: 'bold'}}>{app.timeSlot}</span></div>
+                <div className="detail-row"><span className="detail-label">Time:</span> <span className="detail-value" style={{ fontWeight: 'bold' }}>{app.timeSlot}</span></div>
                 <div className="detail-row"><span className="detail-label">Barber:</span> <span className="detail-value">{app.preferredBarber}</span></div>
               </div>
 
@@ -110,16 +117,16 @@ const AdminDashboard = () => {
               </div>
               <span className={`badge badge-${app.status.toLowerCase()}`}>{app.status}</span>
             </div>
-            
+
             <div className="appointment-details">
-                {/* --- NEW: CUSTOMER ROW --- */}
-                <div className="detail-row">
-                  <span className="detail-label">Customer:</span> 
-                  <span className="detail-value" style={{ fontWeight: 'bold' }}>
-                    {app.user?.username || 'Guest'}
-                  </span>
-                </div>
-                {/* ------------------------- */}
+              {/* --- NEW: CUSTOMER ROW --- */}
+              <div className="detail-row">
+                <span className="detail-label">Customer:</span>
+                <span className="detail-value" style={{ fontWeight: 'bold' }}>
+                  {app.user?.username || 'Guest'}
+                </span>
+              </div>
+              {/* ------------------------- */}
               <div className="detail-row"><span className="detail-label">Date:</span> <span className="detail-value">{new Date(app.date).toLocaleDateString()}</span></div>
               <div className="detail-row"><span className="detail-label">Time:</span> <span className="detail-value">{app.timeSlot}</span></div>
               <div className="detail-row"><span className="detail-label">Barber:</span> <span className="detail-value">{app.preferredBarber}</span></div>

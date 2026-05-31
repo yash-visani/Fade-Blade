@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import QRCode from 'react-qr-code'; // 🔙 We brought the QR Code back!
+import { QRCodeSVG } from 'qrcode.react';
 import api from '../api/axios';
 
 const CustomerDashboard = () => {
@@ -118,7 +118,7 @@ const CustomerDashboard = () => {
                 <div style={{ padding: '30px', flex: '1', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f9fafb' }}>
                   <div style={{ background: 'white', padding: '10px', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
                     {/* The Live QR Code is Back! */}
-                    <QRCode value={safeId} size={100} />
+                    <QRCodeSVG value={safeId} size={100} />
                   </div>
                   <p style={{ fontSize: '0.7rem', color: '#9ca3af', marginTop: '10px', letterSpacing: '1px' }}>ID: {safeId.slice(-6).toUpperCase()}</p>
                   

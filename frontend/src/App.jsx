@@ -15,6 +15,7 @@ import Booking from './pages/Booking';
 import Gallery from './pages/Gallery';
 import Ticket from './pages/Ticket';
 import MenuManager from './pages/MenuManager';
+import AdminScanner from './pages/AdminScanner';
 
 function App() {
   // --- Initialize Scroll Animations ---
@@ -40,6 +41,7 @@ function App() {
           <Route path="/gallery" element={<Gallery />} />
           <Route path="/ticket" element={<Ticket />} />
           <Route path="/admin/menu" element={localStorage.getItem('role') === 'admin' ? <MenuManager /> : <Navigate to="/dashboard" />} />
+          <Route path="/admin/scanner" element={localStorage.getItem('role') === 'admin' ? <AdminScanner /> : <Navigate to="/dashboard" />} />
         </Routes>
       </main>
       <WhatsAppButton /> {/* <-- 2. Add it right here! */}

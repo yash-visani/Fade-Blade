@@ -93,9 +93,14 @@ const AdminDashboard = () => {
           <h2 className="dashboard-title" style={{ fontSize: '2rem', margin: 0 }}>Command Center</h2>
           <p style={{ color: '#6b7280', margin: '5px 0 0 0' }}>Master Admin: {username}</p>
         </div>
-        <button onClick={() => navigate('/admin/menu')} className="btn-primary" style={{ padding: '10px 20px' }}>
-          ⚙️ Manage Shop Menu
-        </button>
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <button onClick={() => navigate('/admin/scanner')} style={{ padding: '10px 20px', backgroundColor: '#3b82f6', color: 'white', border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer' }}>
+            📷 Open Scanner
+          </button>
+          <button onClick={() => navigate('/admin/menu')} className="btn-primary" style={{ padding: '10px 20px' }}>
+            ⚙️ Manage Menu
+          </button>
+        </div>
       </div>
 
       {/* 📊 NEW: ANALYTICS ROW */}

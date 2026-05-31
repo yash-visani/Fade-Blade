@@ -178,10 +178,10 @@ const AdminDashboard = () => {
       )}
 
       {/* --- SECTION 2: ALL OTHER BOOKINGS --- */}
-      <h3 style={{ color: '#374151', marginBottom: '15px' }}>Shop Schedule</h3>
+      <h3 style={{ color: '#374151', marginBottom: '15px', marginTop: '40px' }}>Shop Schedule</h3>
       <div className="dashboard-grid">
         {otherAppointments.map((app) => (
-          <div key={app._id} className="appointment-card" style={{ opacity: app.status === 'cancelled' ? 0.6 : 1 }}>
+          <div key={app._id} className="appointment-card" style={{ opacity: app.status === 'cancelled' ? 0.6 : 1, borderLeft: app.status === 'completed' ? '4px solid #10b981' : 'none' }}>
             <div className="appointment-header">
               <div>
                 <h3 className="appointment-service">{app.service[0]?.name || 'Service'}</h3>
@@ -201,6 +201,17 @@ const AdminDashboard = () => {
               <div className="detail-row"><span className="detail-label">Time:</span> <span className="detail-value">{app.timeSlot}</span></div>
               <div className="detail-row"><span className="detail-label">Barber:</span> <span className="detail-value">{app.preferredBarber}</span></div>
             </div>
+
+            {/* NEW: Admin Manual Complete Button */}
+            {app.status === 'confirmed' && (
+              <button
+                onClick={() => handleStatusUpdate(app._id, 'completed')}
+                style={{ marginTop: '15px', width: '100%', padding: '10px', backgroundColor: '#10b981', color: 'white', border: 'none', borderRadius: '6px', fontWeight: 'bold', cursor: 'pointer' }}
+              >
+                ✅ Mark as Completed
+              </button>
+            )}
+
           </div>
         ))}
       </div>

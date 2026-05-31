@@ -56,7 +56,7 @@ const Lookbook = () => {
     }
   };
 
-  if (loading) return <div className="dashboard-wrapper"><h2 style={{ textAlign: 'center', marginTop: '50px' }}>Loading Gallery...</h2></div>;
+  if (loading) return <div className="dashboard-wrapper"><h2>Loading Gallery...</h2></div>;
 
   return (
     <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '40px 20px' }}>

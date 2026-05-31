@@ -49,7 +49,7 @@ const Navbar = () => {
         <Link to="/" className={`nav-item ${isActive('/')}`} onClick={closeMenu}>Home</Link>
         
         {/* --- FIXED: Lookbook now uses nav-item, isActive, and closeMenu! --- */}
-        <Link to="/lookbook" className={location.pathname === '/lookbook' ? 'active-link' : ''}>Lookbook</Link>
+        <Link to="/lookbook" className="nav-link">Lookbook</Link>
         {/* ----------------------------------------------------------------- */}
 
         {token ? (

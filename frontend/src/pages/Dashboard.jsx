@@ -81,52 +81,61 @@ const CustomerDashboard = () => {
 
             return safeStatus === 'confirmed' ? (
 
-              // 🎟️ THE PREMIUM BLACK-CARD TICKET
-              <div key={safeId} className="digital-ticket" style={{
-                display: 'flex',
-                backgroundColor: '#111827', // Sleek jet black
-                borderRadius: '16px',
-                overflow: 'hidden',
-                boxShadow: '0 20px 25px -5px rgba(0,0,0,0.3)',
-                position: 'relative',
+              // 🎟️ THE PREMIUM BLACK-CARD TICKET (Layout Fixed & Print Safe)
+              <div key={safeId} className="digital-ticket" style={{ 
+                display: 'flex', 
+                flexWrap: 'nowrap', // Forces side-by-side
+                backgroundColor: '#111827', 
+                borderRadius: '16px', 
+                overflow: 'hidden', 
+                boxShadow: '0 20px 25px -5px rgba(0,0,0,0.3)', 
+                position: 'relative', 
                 minHeight: '220px',
-                color: 'white'
+                color: 'white',
+                width: '100%',
+                maxWidth: '700px', // Stops it from stretching too far
+                margin: '0 auto' // Centers the ticket
               }}>
-
+                
                 {/* Left Side: Premium Details */}
-                <div style={{ padding: '30px', flex: '2.5', position: 'relative' }}>
-
+                <div style={{ 
+                  padding: '25px', 
+                  flex: '1', 
+                  position: 'relative',
+                  borderRight: '3px dashed #374151' // Clean, glitch-free perforation line!
+                }}>
+                  
                   {/* Subtle F&B Watermark Background */}
-                  <div style={{ position: 'absolute', top: '-20px', right: '-10px', fontSize: '8rem', opacity: '0.03', pointerEvents: 'none', fontWeight: '900', letterSpacing: '-5px' }}>
+                  <div style={{ position: 'absolute', top: '10px', right: '15px', fontSize: '6rem', opacity: '0.04', pointerEvents: 'none', fontWeight: '900', letterSpacing: '-5px' }}>
                     F&B
                   </div>
 
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '25px', position: 'relative', zIndex: 2 }}>
-                    <span style={{ color: '#f59e0b', fontSize: '0.85rem', fontWeight: '900', letterSpacing: '4px', textTransform: 'uppercase' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', position: 'relative', zIndex: 2 }}>
+                    <span style={{ color: '#f59e0b', fontSize: '0.85rem', fontWeight: '900', letterSpacing: '3px', textTransform: 'uppercase' }}>
                       Fade & Blade VIP
                     </span>
-                    <span style={{ backgroundColor: '#10b981', color: '#111827', padding: '6px 15px', borderRadius: '4px', fontSize: '0.75rem', fontWeight: '900', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                    <span style={{ backgroundColor: '#10b981', color: '#111827', padding: '4px 10px', borderRadius: '4px', fontSize: '0.75rem', fontWeight: '900', textTransform: 'uppercase' }}>
                       Confirmed
                     </span>
                   </div>
 
-                  <h2 style={{ margin: '0 0 30px 0', fontSize: '2.4rem', color: 'white', textTransform: 'capitalize', fontWeight: '900', lineHeight: '1.1', position: 'relative', zIndex: 2 }}>
+                  <h2 style={{ margin: '0 0 25px 0', fontSize: '1.9rem', color: 'white', textTransform: 'capitalize', fontWeight: '900', lineHeight: '1.2', position: 'relative', zIndex: 2 }}>
                     {safeName}
                   </h2>
 
                   {/* Grid for Data */}
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '15px', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '20px', position: 'relative', zIndex: 2 }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '10px', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '15px', position: 'relative', zIndex: 2 }}>
                     <div>
                       <p style={{ fontSize: '0.7rem', color: '#9ca3af', margin: '0 0 5px 0', textTransform: 'uppercase', letterSpacing: '1px' }}>Date</p>
-                      <p style={{ fontSize: '1rem', fontWeight: 'bold', margin: 0 }}>{safeDate}</p>
+                      <p style={{ fontSize: '0.9rem', fontWeight: 'bold', margin: 0 }}>{safeDate}</p>
                     </div>
                     <div>
                       <p style={{ fontSize: '0.7rem', color: '#9ca3af', margin: '0 0 5px 0', textTransform: 'uppercase', letterSpacing: '1px' }}>Time</p>
-                      <p style={{ fontSize: '1rem', fontWeight: 'bold', margin: 0 }}>{safeTime}</p>
+                      <p style={{ fontSize: '0.9rem', fontWeight: 'bold', margin: 0 }}>{safeTime}</p>
                     </div>
                     <div>
                       <p style={{ fontSize: '0.7rem', color: '#9ca3af', margin: '0 0 5px 0', textTransform: 'uppercase', letterSpacing: '1px' }}>Barber</p>
-                      <p style={{ fontSize: '1rem', fontWeight: 'bold', margin: 0, textTransform: 'capitalize' }}>{safeBarber}</p>
+                      <p style={{ fontSize: '0.9rem', fontWeight: 'bold', margin: 0, textTransform: 'capitalize' }}>{safeBarber}</p>
                     </div>
                     <div>
                       <p style={{ fontSize: '0.7rem', color: '#f59e0b', margin: '0 0 5px 0', textTransform: 'uppercase', letterSpacing: '1px' }}>Total</p>
@@ -135,19 +144,26 @@ const CustomerDashboard = () => {
                   </div>
                 </div>
 
-                {/* The Ticket Perforation (The tear-off line) */}
-                <div style={{ width: '4px', background: 'radial-gradient(circle, #f9fafb 4px, transparent 5px) 0 0 / 15px 15px', backgroundColor: '#ffffff', borderLeft: '2px dashed rgba(0,0,0,0.1)', position: 'relative', zIndex: 3 }}></div>
-
                 {/* Right Side: The White QR Stub */}
-                <div style={{ padding: '30px', flex: '1', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', backgroundColor: '#ffffff', color: '#111827' }}>
-
-                  <div style={{ background: 'white', padding: '12px', borderRadius: '12px', border: '2px solid #e5e7eb' }}>
+                <div style={{ 
+                  padding: '20px', 
+                  width: '180px', // STRICT WIDTH: Stops the squishing!
+                  minWidth: '180px',
+                  display: 'flex', 
+                  flexDirection: 'column', 
+                  alignItems: 'center', 
+                  justifyContent: 'center', 
+                  backgroundColor: '#ffffff', 
+                  color: '#111827' 
+                }}>
+                  
+                  <div style={{ background: 'white', padding: '8px', borderRadius: '8px', border: '2px solid #e5e7eb' }}>
                     <QRCodeSVG value={safeId} size={110} />
                   </div>
-
-                  <p style={{ fontSize: '0.75rem', color: '#6b7280', margin: '15px 0 0 0', letterSpacing: '2px', fontWeight: 'bold' }}>ID: {safeId.slice(-6).toUpperCase()}</p>
-
-                  <button onClick={() => window.print()} className="btn-primary" style={{ marginTop: '20px', width: '100%', fontSize: '0.85rem', padding: '12px', borderRadius: '8px', textTransform: 'uppercase', fontWeight: '900', letterSpacing: '1px', boxShadow: '0 4px 6px rgba(245, 158, 11, 0.2)' }}>
+                  
+                  <p style={{ fontSize: '0.7rem', color: '#6b7280', margin: '15px 0 0 0', letterSpacing: '1px', fontWeight: 'bold' }}>ID: {safeId.slice(-6).toUpperCase()}</p>
+                  
+                  <button onClick={() => window.print()} className="btn-primary" style={{ marginTop: '15px', width: '100%', fontSize: '0.85rem', padding: '10px', borderRadius: '6px', textTransform: 'uppercase', fontWeight: '900' }}>
                     🖨️ Print
                   </button>
 

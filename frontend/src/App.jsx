@@ -1,5 +1,5 @@
 import { useEffect } from 'react'; // <-- Import useEffect
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import AOS from 'aos'; // <-- Import AOS
 import 'aos/dist/aos.css'; // <-- Import AOS CSS
 

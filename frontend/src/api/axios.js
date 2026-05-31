@@ -7,9 +7,14 @@ const api = axios.create({
 
 // This automatically attaches your login token to every request
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+  try {
+    // We wrap this in a try-catch so strict mobile browsers don't crash the app
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+  } catch (error) {
+    console.warn("Mobile browser blocked localStorage access:", error);
   }
   return config;
 }, (error) => {

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import QRCode from 'react-qr-code';
+// 🛑 We have completely removed the QRCode library for this test
 import api from '../api/axios';
 
 const CustomerDashboard = () => {
@@ -7,7 +7,7 @@ const CustomerDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   
-  const username = String(localStorage.getItem('username') || 'Guest');
+  const username = localStorage.getItem('username') || 'Guest';
 
   useEffect(() => {
     const fetchMyAppointments = async () => {
@@ -16,8 +16,8 @@ const CustomerDashboard = () => {
         setMyAppointments(response.data);
         setLoading(false);
       } catch (err) {
-        const safeError = err.response?.data?.message || err.message || 'Failed to load tickets.';
-        setError(String(safeError));
+        // 🚨 FIX 1: Hardcoded text prevents an Axios Error Object from crashing the page
+        setError('Failed to securely connect to the database.');
         setLoading(false);
       }
     };
@@ -25,127 +25,93 @@ const CustomerDashboard = () => {
   }, []);
 
   const handleCancel = async (id) => {
-    if (!window.confirm('Are you sure you want to cancel this appointment?')) return;
+    if (!window.confirm('Cancel this appointment?')) return;
     try {
       await api.put(`/bookings/${id}/cancel`);
       setMyAppointments(myAppointments.map(app => 
         app._id === id ? { ...app, status: 'cancelled' } : app
       ));
-      alert('Appointment cancelled successfully.');
     } catch (err) {
-      alert('Failed to cancel appointment.');
+      alert('Failed to cancel.');
     }
   };
 
-  const getSafeServiceName = (serviceData) => {
-    if (!serviceData) return 'Premium Service';
-    if (Array.isArray(serviceData)) return String(serviceData[0]?.name || 'Premium Service');
-    if (typeof serviceData === 'object') return String(serviceData.name || 'Premium Service');
-    return String(serviceData);
-  };
-
   if (loading) return <div className="dashboard-wrapper"><h2>Loading your tickets...</h2></div>;
-  if (error) return <div className="dashboard-wrapper"><h2 style={{color: 'red'}}>{error}</h2></div>;
+  
+  // 🚨 FIX 2: Forced String cast just in case an object still sneaks into the error state
+  if (error) return <div className="dashboard-wrapper"><h2 style={{color: 'red'}}>{String(error)}</h2></div>;
 
   return (
     <div className="dashboard-wrapper ticket-page-wrapper" style={{ maxWidth: '900px', margin: '0 auto', padding: '20px' }}>
       
       <div className="dashboard-header" style={{ marginBottom: '30px' }}>
-        <h2 className="dashboard-title">Welcome back, {username}</h2>
-        <p style={{ color: '#6b7280' }}>Manage your upcoming appointments and digital tickets.</p>
+        <h2 className="dashboard-title">Welcome back, {String(username)}</h2>
       </div>
 
       {myAppointments.length === 0 ? (
         <div style={{ backgroundColor: 'white', padding: '30px', borderRadius: '12px', textAlign: 'center' }}>
           <h3>No appointments yet!</h3>
-          <p>Book a haircut to get your digital boarding pass.</p>
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '30px' }}>
           {myAppointments.map((rawApp) => {
             
-            // ==========================================
-            // ☢️ THE NUCLEAR SANITIZATION BLOCK ☢️
-            // We force every single variable to be safe before React sees it!
-            // ==========================================
+            // Fallbacks to guarantee primitive types
             const safeId = String(rawApp._id || 'UNKNOWN');
             const safeStatus = String(rawApp.status || 'pending').toLowerCase();
             const safeDate = rawApp.date ? new Date(rawApp.date).toLocaleDateString() : 'TBD';
             const safeTime = String(rawApp.timeSlot || 'TBD');
             const safePrice = Number(rawApp.totalPrice || 0);
-            const safeName = getSafeServiceName(rawApp.service);
             
-            // If preferredBarber is an object, grab the name. Otherwise, cast to String.
-            const safeBarber = typeof rawApp.preferredBarber === 'object' 
-              ? String(rawApp.preferredBarber?.name || 'Any') 
-              : String(rawApp.preferredBarber || 'Any');
+            // Safely extract the nested service name
+            let safeName = 'Premium Service';
+            if (rawApp.service && Array.isArray(rawApp.service)) {
+              safeName = String(rawApp.service[0]?.name || 'Premium Service');
+            } else if (rawApp.service && typeof rawApp.service === 'object') {
+              safeName = String(rawApp.service.name || 'Premium Service');
+            }
+
+            // Safely extract the barber name
+            let safeBarber = 'Any';
+            if (rawApp.preferredBarber && typeof rawApp.preferredBarber === 'object') {
+              safeBarber = String(rawApp.preferredBarber.name || 'Any');
+            } else if (rawApp.preferredBarber) {
+              safeBarber = String(rawApp.preferredBarber);
+            }
 
             return safeStatus === 'confirmed' ? (
-              
-              // --- VIP CONFIRMED TICKET ---
-              <div key={safeId} className="digital-ticket" style={{ backgroundColor: 'white', borderRadius: '16px', display: 'flex', overflow: 'hidden', boxShadow: '0 10px 25px -5px rgba(0,0,0,0.1)', position: 'relative', minHeight: '200px' }}>
+              <div key={safeId} className="digital-ticket" style={{ backgroundColor: 'white', borderRadius: '16px', display: 'flex', overflow: 'hidden', boxShadow: '0 10px 25px -5px rgba(0,0,0,0.1)', minHeight: '200px' }}>
                 
-                {/* Left Side: Ticket Details */}
+                {/* Details */}
                 <div style={{ padding: '30px', flex: '2', borderRight: '2px dashed #e5e7eb' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px' }}>
-                    <div>
-                      <h4 style={{ color: '#f59e0b', textTransform: 'uppercase', letterSpacing: '2px', fontSize: '0.8rem', margin: '0 0 5px 0' }}>Fade & Blade VIP</h4>
-                      <h2 style={{ margin: 0, fontSize: '1.8rem', color: '#111827' }}>{safeName}</h2>
-                    </div>
-                    <span style={{ backgroundColor: '#10b981', color: 'white', padding: '5px 12px', borderRadius: '20px', fontSize: '0.8rem', fontWeight: 'bold' }}>Confirmed</span>
-                  </div>
-
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginTop: '20px' }}>
-                    <div>
-                      <p style={{ fontSize: '0.8rem', color: '#6b7280', margin: '0 0 5px 0', textTransform: 'uppercase' }}>Date</p>
-                      <p style={{ fontSize: '1.1rem', fontWeight: 'bold', margin: 0, color: '#111827' }}>{safeDate}</p>
-                    </div>
-                    <div>
-                      <p style={{ fontSize: '0.8rem', color: '#6b7280', margin: '0 0 5px 0', textTransform: 'uppercase' }}>Time</p>
-                      <p style={{ fontSize: '1.1rem', fontWeight: 'bold', margin: 0, color: '#111827' }}>{safeTime}</p>
-                    </div>
-                    <div>
-                      <p style={{ fontSize: '0.8rem', color: '#6b7280', margin: '0 0 5px 0', textTransform: 'uppercase' }}>Barber</p>
-                      <p style={{ fontSize: '1.1rem', fontWeight: 'bold', margin: 0, color: '#111827' }}>{safeBarber}</p>
-                    </div>
-                    <div>
-                      <p style={{ fontSize: '0.8rem', color: '#6b7280', margin: '0 0 5px 0', textTransform: 'uppercase' }}>Total</p>
-                      <p style={{ fontSize: '1.1rem', fontWeight: 'bold', margin: 0, color: '#111827' }}>₹{safePrice}</p>
-                    </div>
+                  <h4 style={{ color: '#f59e0b', margin: '0 0 5px 0' }}>Fade & Blade VIP</h4>
+                  <h2 style={{ margin: 0, fontSize: '1.8rem' }}>{safeName}</h2>
+                  
+                  <div style={{ display: 'flex', gap: '15px', marginTop: '20px', color: '#6b7280' }}>
+                    <p>Date: <span style={{fontWeight: 'bold', color: 'black'}}>{safeDate}</span></p>
+                    <p>Time: <span style={{fontWeight: 'bold', color: 'black'}}>{safeTime}</span></p>
                   </div>
                 </div>
 
-                {/* Right Side: QR Code & Actions */}
-                <div style={{ padding: '30px', flex: '1', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f9fafb' }}>
-                  <div style={{ background: 'white', padding: '10px', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
-                    <QRCode value={safeId} size={100} />
+                {/* Actions - QR Code completely removed for this test */}
+                <div style={{ padding: '30px', flex: '1', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                  <div style={{ background: '#f3f4f6', padding: '20px', borderRadius: '8px', textAlign: 'center', width: '100px', height: '100px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                     <span style={{ fontSize: '0.8rem', color: '#6b7280' }}>QR Code Placeholder</span>
                   </div>
-                  <p style={{ fontSize: '0.7rem', color: '#9ca3af', marginTop: '10px', letterSpacing: '1px' }}>ID: {safeId.slice(-6).toUpperCase()}</p>
-                  
-                  <button onClick={() => window.print()} className="btn-primary" style={{ marginTop: '15px', width: '100%', fontSize: '0.9rem' }}>
-                    🖨️ Print Ticket
-                  </button>
+                  <p style={{ fontSize: '0.7rem', marginTop: '10px' }}>ID: {safeId.slice(-6).toUpperCase()}</p>
                 </div>
               </div>
             ) : (
-              
-              // --- STANDARD CARD (PENDING / CANCELLED) ---
-              <div key={safeId} style={{ backgroundColor: 'white', padding: '20px', borderRadius: '12px', boxShadow: '0 2px 4px rgba(0,0,0,0.05)', opacity: safeStatus === 'cancelled' ? 0.6 : 1, borderLeft: safeStatus === 'pending' ? '4px solid #f59e0b' : 'none' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '15px' }}>
+              <div key={safeId} style={{ backgroundColor: 'white', padding: '20px', borderRadius: '12px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                   <h3 style={{ margin: 0 }}>{safeName}</h3>
-                  <span className={`badge badge-${safeStatus}`}>{safeStatus}</span>
+                  <span style={{ textTransform: 'capitalize', fontWeight: 'bold' }}>{safeStatus}</span>
                 </div>
-                <div style={{ display: 'flex', gap: '20px', color: '#6b7280', fontSize: '0.9rem' }}>
+                <div style={{ display: 'flex', gap: '20px', marginTop: '10px', color: '#6b7280' }}>
                   <span>📅 {safeDate}</span>
                   <span>⏱️ {safeTime}</span>
                   <span>✂️ {safeBarber}</span>
                 </div>
-                
-                {safeStatus === 'pending' && (
-                  <button onClick={() => handleCancel(safeId)} className="btn-danger" style={{ marginTop: '15px', padding: '8px 15px', fontSize: '0.8rem' }}>
-                    Cancel Request
-                  </button>
-                )}
               </div>
             );
           })}

@@ -7,7 +7,7 @@ const CustomerDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   
-  const username = localStorage.getItem('username');
+  const username = String(localStorage.getItem('username') || 'Guest');
 
   useEffect(() => {
     const fetchMyAppointments = async () => {
@@ -16,7 +16,6 @@ const CustomerDashboard = () => {
         setMyAppointments(response.data);
         setLoading(false);
       } catch (err) {
-        // FIXED: Guaranteed to only save a string, never an error object
         const safeError = err.response?.data?.message || err.message || 'Failed to load tickets.';
         setError(String(safeError));
         setLoading(false);
@@ -38,15 +37,10 @@ const CustomerDashboard = () => {
     }
   };
 
-  // ==========================================
-  // 🛡️ THE SAFETY FILTER (Prevents Error 130)
-  // ==========================================
-  // MongoDB sometimes sends the service as an Array, sometimes as an Object.
-  // This function forces it into a clean String so React never crashes.
   const getSafeServiceName = (serviceData) => {
     if (!serviceData) return 'Premium Service';
-    if (Array.isArray(serviceData)) return serviceData[0]?.name || 'Premium Service';
-    if (typeof serviceData === 'object') return serviceData.name || 'Premium Service';
+    if (Array.isArray(serviceData)) return String(serviceData[0]?.name || 'Premium Service');
+    if (typeof serviceData === 'object') return String(serviceData.name || 'Premium Service');
     return String(serviceData);
   };
 
@@ -68,21 +62,35 @@ const CustomerDashboard = () => {
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '30px' }}>
-          {myAppointments.map((app) => (
+          {myAppointments.map((rawApp) => {
             
-            app.status === 'confirmed' ? (
-              <div key={app._id} className="digital-ticket" style={{ backgroundColor: 'white', borderRadius: '16px', display: 'flex', overflow: 'hidden', boxShadow: '0 10px 25px -5px rgba(0,0,0,0.1)', position: 'relative', minHeight: '200px' }}>
+            // ==========================================
+            // ☢️ THE NUCLEAR SANITIZATION BLOCK ☢️
+            // We force every single variable to be safe before React sees it!
+            // ==========================================
+            const safeId = String(rawApp._id || 'UNKNOWN');
+            const safeStatus = String(rawApp.status || 'pending').toLowerCase();
+            const safeDate = rawApp.date ? new Date(rawApp.date).toLocaleDateString() : 'TBD';
+            const safeTime = String(rawApp.timeSlot || 'TBD');
+            const safePrice = Number(rawApp.totalPrice || 0);
+            const safeName = getSafeServiceName(rawApp.service);
+            
+            // If preferredBarber is an object, grab the name. Otherwise, cast to String.
+            const safeBarber = typeof rawApp.preferredBarber === 'object' 
+              ? String(rawApp.preferredBarber?.name || 'Any') 
+              : String(rawApp.preferredBarber || 'Any');
+
+            return safeStatus === 'confirmed' ? (
+              
+              // --- VIP CONFIRMED TICKET ---
+              <div key={safeId} className="digital-ticket" style={{ backgroundColor: 'white', borderRadius: '16px', display: 'flex', overflow: 'hidden', boxShadow: '0 10px 25px -5px rgba(0,0,0,0.1)', position: 'relative', minHeight: '200px' }}>
                 
                 {/* Left Side: Ticket Details */}
                 <div style={{ padding: '30px', flex: '2', borderRight: '2px dashed #e5e7eb' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px' }}>
                     <div>
                       <h4 style={{ color: '#f59e0b', textTransform: 'uppercase', letterSpacing: '2px', fontSize: '0.8rem', margin: '0 0 5px 0' }}>Fade & Blade VIP</h4>
-                      
-                      {/* 🛡️ Using the Safety Filter here! */}
-                      <h2 style={{ margin: 0, fontSize: '1.8rem', color: '#111827' }}>
-                        {getSafeServiceName(app.service)}
-                      </h2>
+                      <h2 style={{ margin: 0, fontSize: '1.8rem', color: '#111827' }}>{safeName}</h2>
                     </div>
                     <span style={{ backgroundColor: '#10b981', color: 'white', padding: '5px 12px', borderRadius: '20px', fontSize: '0.8rem', fontWeight: 'bold' }}>Confirmed</span>
                   </div>
@@ -90,19 +98,19 @@ const CustomerDashboard = () => {
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginTop: '20px' }}>
                     <div>
                       <p style={{ fontSize: '0.8rem', color: '#6b7280', margin: '0 0 5px 0', textTransform: 'uppercase' }}>Date</p>
-                      <p style={{ fontSize: '1.1rem', fontWeight: 'bold', margin: 0, color: '#111827' }}>{new Date(app.date).toLocaleDateString()}</p>
+                      <p style={{ fontSize: '1.1rem', fontWeight: 'bold', margin: 0, color: '#111827' }}>{safeDate}</p>
                     </div>
                     <div>
                       <p style={{ fontSize: '0.8rem', color: '#6b7280', margin: '0 0 5px 0', textTransform: 'uppercase' }}>Time</p>
-                      <p style={{ fontSize: '1.1rem', fontWeight: 'bold', margin: 0, color: '#111827' }}>{app.timeSlot}</p>
+                      <p style={{ fontSize: '1.1rem', fontWeight: 'bold', margin: 0, color: '#111827' }}>{safeTime}</p>
                     </div>
                     <div>
                       <p style={{ fontSize: '0.8rem', color: '#6b7280', margin: '0 0 5px 0', textTransform: 'uppercase' }}>Barber</p>
-                      <p style={{ fontSize: '1.1rem', fontWeight: 'bold', margin: 0, color: '#111827' }}>{app.preferredBarber}</p>
+                      <p style={{ fontSize: '1.1rem', fontWeight: 'bold', margin: 0, color: '#111827' }}>{safeBarber}</p>
                     </div>
                     <div>
                       <p style={{ fontSize: '0.8rem', color: '#6b7280', margin: '0 0 5px 0', textTransform: 'uppercase' }}>Total</p>
-                      <p style={{ fontSize: '1.1rem', fontWeight: 'bold', margin: 0, color: '#111827' }}>₹{Number(app.totalPrice || 0)}</p>
+                      <p style={{ fontSize: '1.1rem', fontWeight: 'bold', margin: 0, color: '#111827' }}>₹{safePrice}</p>
                     </div>
                   </div>
                 </div>
@@ -110,11 +118,9 @@ const CustomerDashboard = () => {
                 {/* Right Side: QR Code & Actions */}
                 <div style={{ padding: '30px', flex: '1', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f9fafb' }}>
                   <div style={{ background: 'white', padding: '10px', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
-                    
-                    {/* 🛡️ Forcing the ID to be a string just in case */}
-                    <QRCode value={String(app._id)} size={100} />
+                    <QRCode value={safeId} size={100} />
                   </div>
-                  <p style={{ fontSize: '0.7rem', color: '#9ca3af', marginTop: '10px', letterSpacing: '1px' }}>ID: {String(app._id).slice(-6).toUpperCase()}</p>
+                  <p style={{ fontSize: '0.7rem', color: '#9ca3af', marginTop: '10px', letterSpacing: '1px' }}>ID: {safeId.slice(-6).toUpperCase()}</p>
                   
                   <button onClick={() => window.print()} className="btn-primary" style={{ marginTop: '15px', width: '100%', fontSize: '0.9rem' }}>
                     🖨️ Print Ticket
@@ -123,28 +129,26 @@ const CustomerDashboard = () => {
               </div>
             ) : (
               
-              // Standard Card for Pending / Cancelled
-              <div key={app._id} style={{ backgroundColor: 'white', padding: '20px', borderRadius: '12px', boxShadow: '0 2px 4px rgba(0,0,0,0.05)', opacity: app.status === 'cancelled' ? 0.6 : 1, borderLeft: app.status === 'pending' ? '4px solid #f59e0b' : 'none' }}>
+              // --- STANDARD CARD (PENDING / CANCELLED) ---
+              <div key={safeId} style={{ backgroundColor: 'white', padding: '20px', borderRadius: '12px', boxShadow: '0 2px 4px rgba(0,0,0,0.05)', opacity: safeStatus === 'cancelled' ? 0.6 : 1, borderLeft: safeStatus === 'pending' ? '4px solid #f59e0b' : 'none' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '15px' }}>
-                  
-                  {/* 🛡️ Using the Safety Filter here! */}
-                  <h3 style={{ margin: 0 }}>{getSafeServiceName(app.service)}</h3>
-                  <span className={`badge badge-${app.status.toLowerCase()}`}>{app.status}</span>
+                  <h3 style={{ margin: 0 }}>{safeName}</h3>
+                  <span className={`badge badge-${safeStatus}`}>{safeStatus}</span>
                 </div>
                 <div style={{ display: 'flex', gap: '20px', color: '#6b7280', fontSize: '0.9rem' }}>
-                  <span>📅 {new Date(app.date).toLocaleDateString()}</span>
-                  <span>⏱️ {app.timeSlot}</span>
-                  <span>✂️ {app.preferredBarber}</span>
+                  <span>📅 {safeDate}</span>
+                  <span>⏱️ {safeTime}</span>
+                  <span>✂️ {safeBarber}</span>
                 </div>
                 
-                {app.status === 'pending' && (
-                  <button onClick={() => handleCancel(app._id)} className="btn-danger" style={{ marginTop: '15px', padding: '8px 15px', fontSize: '0.8rem' }}>
+                {safeStatus === 'pending' && (
+                  <button onClick={() => handleCancel(safeId)} className="btn-danger" style={{ marginTop: '15px', padding: '8px 15px', fontSize: '0.8rem' }}>
                     Cancel Request
                   </button>
                 )}
               </div>
-            )
-          ))}
+            );
+          })}
         </div>
       )}
     </div>

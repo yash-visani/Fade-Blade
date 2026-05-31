@@ -12,7 +12,7 @@ import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import AdminDashboard from './pages/AdminDashboard';
 import Booking from './pages/Booking';
-import Gallery from './pages/Gallery';
+import Lookbook from './pages/Lookbook';
 import Ticket from './pages/Ticket';
 import MenuManager from './pages/MenuManager';
 import AdminScanner from './pages/AdminScanner';
@@ -38,7 +38,7 @@ function App() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/book" element={<Booking />} />
-          <Route path="/gallery" element={<Gallery />} />
+          <Route path="/lookbook" element={<Lookbook />} />
           <Route path="/ticket" element={<Ticket />} />
           <Route path="/admin/menu" element={localStorage.getItem('role') === 'admin' ? <MenuManager /> : <Navigate to="/dashboard" />} />
           <Route path="/admin/scanner" element={localStorage.getItem('role') === 'admin' ? <AdminScanner /> : <Navigate to="/dashboard" />} />

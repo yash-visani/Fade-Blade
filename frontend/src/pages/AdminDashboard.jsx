@@ -94,7 +94,7 @@ const AdminDashboard = () => {
           <p style={{ color: '#6b7280', margin: '5px 0 0 0' }}>Master Admin: {username}</p>
         </div>
         <div style={{ display: 'flex', gap: '10px' }}>
-          <button onClick={() => navigate('/admin/scanner')} style={{ padding: '10px 20px', backgroundColor: '#3b82f6', color: 'white', border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer' }}>
+          <button onClick={() => navigate('/admin/scanner')} className="btn-primary" style={{ padding: '10px 20px' }}>
             📷 Open Scanner
           </button>
           <button onClick={() => navigate('/admin/menu')} className="btn-primary" style={{ padding: '10px 20px' }}>

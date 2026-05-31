@@ -74,7 +74,7 @@ const AdminScanner = () => {
                         Scan Another
                     </button>
                 )}
-                <button onClick={() => navigate('/admin/dashboard')} style={{ flex: 1, padding: '15px', backgroundColor: '#374151', color: 'white', border: 'none', borderRadius: '8px', fontWeight: 'bold', fontSize: '1rem' }}>
+                <button onClick={() => navigate('/admin')} style={{ flex: 1, padding: '15px', backgroundColor: '#374151', color: 'white', border: 'none', borderRadius: '8px', fontWeight: 'bold', fontSize: '1rem' }}>
                     Exit Scanner
                 </button>
             </div>

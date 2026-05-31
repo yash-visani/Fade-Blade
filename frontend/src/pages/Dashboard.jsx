@@ -50,9 +50,14 @@ const CustomerDashboard = () => {
   return (
     <div className="dashboard-wrapper ticket-page-wrapper" style={{ maxWidth: '900px', margin: '0 auto', padding: '20px' }}>
 
-      <div className="dashboard-header" style={{ marginBottom: '30px' }}>
-        <h2 className="dashboard-title">Welcome back, {String(username)}</h2>
-        <p style={{ color: '#6b7280' }}>Manage your upcoming appointments and digital tickets.</p>
+      {/* 🌟 UPGRADED PREMIUM HEADER */}
+      <div style={{ marginBottom: '40px', borderBottom: '2px solid #f3f4f6', paddingBottom: '20px', display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+        <h2 style={{ fontSize: '2.5rem', fontWeight: '900', color: '#111827', margin: '0 0 10px 0', textTransform: 'capitalize', letterSpacing: '-1px' }}>
+          Welcome back, {String(username)}
+        </h2>
+        <p style={{ color: '#6b7280', fontSize: '1.1rem', margin: 0 }}>
+          Manage your upcoming appointments and digital tickets.
+        </p>
       </div>
 
       {myAppointments.length === 0 ? (
